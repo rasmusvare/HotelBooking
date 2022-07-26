@@ -21,7 +21,27 @@ public class BookingService : BaseEntityService<App.BLL.DTO.Booking, App.DAL.DTO
 
     public async Task<IEnumerable<Booking>> GetAllHotelAsync(Guid hotelId, bool noTracking = true)
     {
-        return (await Repository.GetAllHotelAsync(hotelId, noTracking)).Select(x => Mapper.Map(x)!);
+        var bookings = (await Repository.GetAllHotelAsync(hotelId, noTracking)).Select(x => Mapper.Map(x)!).ToList();
+        
+        foreach (var booking in bookings)
+        {
+            booking.BookingHolder = FindBookingHolder(booking.Guests!);
+            booking.BookingHolderId = booking.BookingHolder.Id;
+        }
+
+        return bookings;    }
+
+    public async Task<IEnumerable<Booking>> SearchBookingsByEmail(string email, bool noTracking = true)
+    {
+        var bookings = (await Repository.SearchBookingsByEmail(email, noTracking)).Select(x => Mapper.Map(x)!).ToList();
+
+        foreach (var booking in bookings)
+        {
+            booking.BookingHolder = FindBookingHolder(booking.Guests!);
+            booking.BookingHolderId = booking.BookingHolder.Id;
+        }
+
+        return bookings;
     }
 
     public async Task<Booking?> GetBooking(Guid bookingId, bool noTracking = true)
@@ -33,12 +53,8 @@ public class BookingService : BaseEntityService<App.BLL.DTO.Booking, App.DAL.DTO
             return null;
         }
 
-        booking.BookingHolder = booking.Guests?.FirstOrDefault(g => g.IsBookingOwner);
-
-        if (booking.BookingHolder != null)
-        {
-            booking.BookingHolderId = booking.BookingHolder.Id;
-        }
+        booking.BookingHolder = FindBookingHolder(booking.Guests!);
+        booking.BookingHolderId = booking.BookingHolder.Id;
 
         return booking;
     }
@@ -46,14 +62,14 @@ public class BookingService : BaseEntityService<App.BLL.DTO.Booking, App.DAL.DTO
     public async Task<List<string>> ValidateBooking(Booking booking, RoomType roomType)
     {
         var validationErrors = new List<string>();
-        
+
         var roomTypeBookings = (await Repository.GetBookingsForRoomType(Mapper.Map(booking)!)).ToList();
-        
+
         if (roomTypeBookings.Count >= roomType.Count)
         {
             validationErrors.Add("No rooms available for the selected time period");
         }
-        
+
         if (booking.Guests?.Count == 0)
         {
             validationErrors.Add("No guests provided");
@@ -64,12 +80,11 @@ public class BookingService : BaseEntityService<App.BLL.DTO.Booking, App.DAL.DTO
             validationErrors.Add("Too many guests for the selected room type");
         }
 
-        
 
         return validationErrors;
 
         //TODO!
-    } 
+    }
 
 //TODO!
     public override Booking Add(Booking booking)
@@ -78,5 +93,10 @@ public class BookingService : BaseEntityService<App.BLL.DTO.Booking, App.DAL.DTO
         //
         // booking.TotalPrice = numberOfNights
         return base.Add(booking);
+    }
+
+    private Guest FindBookingHolder(IEnumerable<Guest> guests)
+    {
+        return guests.First(g => g.IsBookingOwner);
     }
 }

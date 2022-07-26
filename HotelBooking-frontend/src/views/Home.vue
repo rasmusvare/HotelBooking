@@ -1,26 +1,4 @@
-<template>
-  <div class="container">
-    <div class="px-4 py-5 my-5 text-center">
-      <h1 class="display-5 fw-bold">
-        Welcome to {{ hotelStore.current?.name }}!
-      </h1>
-      <p>{{ hotelStore.current?.description }}</p>
-      <p>
-        {{ hotelStore.current?.address }} | {{ hotelStore.current?.email }} |
-        {{ hotelStore.current?.telephoneNumber }}
-      </p>
-      <div class="col-lg-10 mx-auto mt-5">
-        <SearchRoom />
-      </div>
-      <div class="col-lg-10 mx-auto">
-        <SearchResults />
-      </div>
-    </div>
-  </div>
-</template>
-
 <script lang="ts">
-// import IdentityService from "@/services/IdentityService";
 import { useIdentityStore } from "@/stores/identity";
 import { Options, Vue } from "vue-class-component";
 import SearchRoom from "@/components/SearchRoom.vue";
@@ -32,10 +10,7 @@ import SearchResults from "@/components/SearchResults.vue";
 import { useSearchResultsStore } from "@/stores/SearchResults";
 
 @Options({
-  props: {
-    // rooms: Object as unknown as IRoom[],
-    // sectionId: String
-  },
+  props: {},
   components: {
     SearchRoom,
     SearchResults,
@@ -64,6 +39,32 @@ export default class Home extends Vue {
   }
 }
 </script>
+
+<template>
+  <div class="container">
+    <div class="px-4 py-5 my-5 text-center">
+      <div>
+        <RouterLink to="/bookingsearch">Search bookings</RouterLink>
+        |
+        <RouterLink to="/admin">Admin</RouterLink>
+      </div>
+      <h1 class="display-5 fw-bold">
+        Welcome to {{ hotelStore.current?.name }}!
+      </h1>
+      <p>{{ hotelStore.current?.description }}</p>
+      <p>
+        {{ hotelStore.current?.address }} | {{ hotelStore.current?.email }} |
+        {{ hotelStore.current?.telephoneNumber }}
+      </p>
+      <div class="col-lg-10 mx-auto mt-5">
+        <SearchRoom :hotelId="hotelId"/>
+      </div>
+      <div class="col-lg-10 mx-auto">
+        <SearchResults />
+      </div>
+    </div>
+  </div>
+</template>
 
 <style>
 .form-identity {

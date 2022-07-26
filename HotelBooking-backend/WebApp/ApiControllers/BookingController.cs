@@ -36,10 +36,10 @@ public class BookingController : ControllerBase
     }
 
     // GET: api/Booking
-    [HttpGet]
-    public async Task<ActionResult<IEnumerable<App.Public.DTO.v1.Booking>>> GetBookings()
+    [HttpGet("search/{email}")]
+    public async Task<ActionResult<IEnumerable<App.Public.DTO.v1.Booking>>> GetBookings(string email)
     {
-        var bookings = (await _bll.Bookings.GetAllUserAsync(User.GetUserId()))
+        var bookings = (await _bll.Bookings.SearchBookingsByEmail(email))
             .Select(x => _bookingMapper.Map(x)!)
             .ToList();
 

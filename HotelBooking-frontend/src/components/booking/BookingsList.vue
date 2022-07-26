@@ -13,14 +13,13 @@
     <tbody>
     <template v-bind:key="booking.id" v-for="booking in bookings">
       <tr>
-        <td></td>
-        <!-- <td>{{`${reservation.client.firstName} ${reservation.client.lastName}`}}</td> -->
+        <!-- <td></td> -->
+        <td>{{`${booking.bookingHolder?.firstName} ${booking.bookingHolder?.lastName}`}}</td>
         <td>{{ roomTypeStore.getRoomTypeById(booking.roomTypeId!)?.name}}</td>
         <td>{{booking.guests.length}}</td>
         <td>{{new Date(booking.dateFrom!).toDateString()}}</td>
         <td>{{new Date(booking.dateTo!).toDateString()}}</td>
         <td style="width: 10%">
-        {{booking.id}}
         <RouterLink :to="{ name: 'bookingedit', params: { bookingId: booking.id }}">
                         <button class="btn btn-primary ms-3 btn-sm">Manage</button>
                     </RouterLink>
@@ -61,7 +60,7 @@ export default class BookingsList extends Vue {
   bookings!: IBooking[]
   bookingService = new BookingService();
 
-  hotelStore = useHotelStore();
+  // hotelStore = useHotelStore();
   roomTypeStore = useRoomTypeStore()
 
   async mounted(){

@@ -8,7 +8,5 @@ export interface IBooking extends IBaseEntity {
   dateTo: Date | string;
   noOfGuests: number;
   guests: IGuest[];
-
-  //CLIENT
-
+  bookingHolder?: IGuest;
 }

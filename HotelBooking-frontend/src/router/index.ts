@@ -15,6 +15,7 @@ import BookingCreate from "@/views/BookingCreate.vue";
 import BookingAdded from "@/views/BookingAdded.vue";
 
 import BookingEdit from "@/views/admin/BookingEdit.vue";
+import BookingSearch from "@/views/BookingSearch.vue";
 
 
 const router = createRouter({
@@ -29,6 +30,7 @@ const router = createRouter({
         { path: "/search", name: "searchrooms", component: SearchRoom, props: true},
         { path: "/booking", name: "bookingcreate", component: BookingCreate, props: true},
         { path: "/bookingadded", name: "bookingadded", component: BookingAdded, props: true},
+        { path: "/bookingsearch", name: "bookingsearch", component: BookingSearch, props: true},
       // ]
     // },
     {

@@ -50,6 +50,25 @@ public class BookingRepository : BaseEntityRepository<App.DAL.DTO.Booking, App.D
         return bookings.Select(x=>Mapper.Map(x)!);
     }
 
+    public async Task<IEnumerable<Booking>> SearchBookingsByEmail(string email, bool noTracking = true)
+    {
+        var query = CreateQuery(noTracking);
+
+        // var bookings = await query
+        //     .Include(b => b.Guests)
+        //     .SelectMany(b=>b.Guests!
+        //         .Where(g=>g.Email==email && g.IsBookingOwner))
+        //     .Select(g=>g.Booking!)
+        //     .ToListAsync();
+
+        var bookings = await query
+            .Include(b => b.Guests)
+            .Where(b => b.Guests!.Any(g => g.IsBookingOwner && g.Email == email))
+            .ToListAsync();
+
+        return bookings.Select(x => Mapper.Map(x)!);
+    }
+
     public override async Task<Booking?> FirstOrDefaultAsync(Guid id, bool noTracking = true)
     {
         var query = CreateQuery(noTracking);
@@ -61,6 +80,8 @@ public class BookingRepository : BaseEntityRepository<App.DAL.DTO.Booking, App.D
         return Mapper.Map(booking);
         // return base.FirstOrDefaultAsync(id, noTracking);
     }
+    
+    
 
     // public override Booking Add(Booking booking)
     // {
