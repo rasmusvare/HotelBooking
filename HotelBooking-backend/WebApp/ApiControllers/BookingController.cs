@@ -1,19 +1,11 @@
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Net;
-using System.Threading.Tasks;
 using App.Contracts.BLL;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using App.DAL.EF;
 using App.Public.DTO.v1;
 using App.Public.DTO.v1.ErrorResponses;
 using App.Public.DTO.v1.Mappers;
 using AutoMapper;
-using Base.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 
@@ -117,7 +109,9 @@ public class BookingController : ControllerBase
             return BadRequest(errorResponse);
         }
 
-        if (!await _bll.Bookings.ExistsAsync(id))
+        var bookingDb = await _bll.Bookings.GetBooking(booking.Id);
+
+        if (bookingDb == null)
         {
             var errorResponse = new RestErrorResponse
             {
@@ -138,7 +132,7 @@ public class BookingController : ControllerBase
 
         //TODO: Check dates, if not admin
         Console.WriteLine(booking.DateFrom.ToString());
-        if (!User.IsInRole("Admin") && DateOnly.FromDateTime(DateTime.Now).AddDays(3) > DateOnly.Parse(booking.DateFrom.ToString()) )
+        if (!User.IsInRole("Admin") && DateOnly.FromDateTime(DateTime.Now).AddDays(3) > DateOnly.Parse(bookingDb.DateFrom.ToString()) )
         {
             var errorResponse = new RestErrorResponse
             {
@@ -150,7 +144,7 @@ public class BookingController : ControllerBase
                 {
                     ["Bad request"] = new List<string>
                     {
-                        $"Cannot change booking within 3 days from the booking start date"
+                        "Cannot change booking within 3 days from the booking start date"
                     }
                 }
             };
@@ -254,7 +248,7 @@ public class BookingController : ControllerBase
                 {
                     ["Bad request"] = new List<string>
                     {
-                        $"Cannot delete booking within 3 days from the booking start date"
+                        "Cannot delete booking within 3 days from the booking start date"
                     }
                 }
             };

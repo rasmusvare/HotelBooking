@@ -1,3 +1,87 @@
+
+
+<script lang="ts">
+import type { IAmenity } from "@/domain/IAmenity";
+import { AmenityService } from "@/services/AmenityService";
+import { useAmenityStore } from "@/stores/Amenities";
+import { Options, Vue } from "vue-class-component";
+
+@Options({
+  props: {
+    hotelId: String,
+  },
+})
+export default class HotelAmenitiesEdit extends Vue {
+  amenityStore = useAmenityStore();
+  amenityService = new AmenityService();
+
+  errorMessage: Array<string> | null | undefined = null;
+
+  selectedAmenityId: string | undefined = undefined;
+
+  hotelId!: string;
+  amenityFormData: IAmenity = {
+    name: "",
+    description: "",
+  };
+
+  mounted() {
+    this.amenityFormData.hotelId = this.hotelId;
+  }
+
+  handleSelectAmenity(amenity: IAmenity) {
+    this.selectedAmenityId =
+      this.selectedAmenityId == amenity.id! ? undefined : amenity.id!;
+    this.amenityFormData.name = amenity.name;
+    this.amenityFormData.description = amenity.description;
+  }
+
+  async handleCreateAmenity() {
+    const res = await this.amenityService.add(this.amenityFormData);
+    if (res.status >= 300) {
+      this.errorMessage = res.errorMessage;
+      console.log(res);
+    } else {
+      this.amenityStore.$state.data = await this.amenityService.getAll(
+        this.hotelId
+      );
+    }
+
+  }
+
+  async handleEditAmenity() {
+    this.amenityFormData.id = this.selectedAmenityId;
+    const res = await this.amenityService.update(this.amenityFormData);
+    if (res.status >= 300) {
+      this.errorMessage = res.errorMessage;
+      console.log(res);
+    } else {
+      this.amenityStore.$state.data = await this.amenityService.getAll(
+        this.hotelId
+      );
+    }
+
+  }
+
+  async handleDeleteAmenity() {
+    // await await AmenityService.delete(this.selectedAmenityId!)
+    //   .then((res) => {
+    //     if (!res.success) {
+    //       console.log(res);
+    //       return;
+    //     }
+    //     this.amenityStore.deleteAmenity(this.selectedAmenityId!);
+    //     this.selectedAmenityId = null;
+    //     this.amenityFormData.name = "";
+    //     this.amenityFormData.description = "";
+    //   })
+    //   .catch((res) => {
+    //     console.log(res);
+    //   });
+  }
+}
+</script>
+
 <template>
   <h1 class="h3 mb-3 fw-normal">Amenities</h1>
   <div class="d-flex">
@@ -66,111 +150,3 @@
   </div>
 </template>
 
-<script lang="ts">
-import type { IAmenity } from "@/domain/IAmenity";
-import { AmenityService } from "@/services/AmenityService";
-import { useAmenityStore } from "@/stores/Amenities";
-import { Options, Vue } from "vue-class-component";
-
-@Options({
-  props: {
-    hotelId: String,
-  },
-})
-export default class HotelAmenitiesEdit extends Vue {
-  amenityStore = useAmenityStore();
-  amenityService = new AmenityService();
-
-  errorMessage: Array<string> | null | undefined = null;
-
-  selectedAmenityId: string | undefined = undefined;
-
-  hotelId!: string;
-  amenityFormData: IAmenity = {
-    name: "",
-    description: "",
-  };
-
-  mounted() {
-    this.amenityFormData.hotelId = this.hotelId;
-  }
-
-  handleSelectAmenity(amenity: IAmenity) {
-    this.selectedAmenityId =
-      this.selectedAmenityId == amenity.id! ? undefined : amenity.id!;
-    this.amenityFormData.name = amenity.name;
-    this.amenityFormData.description = amenity.description;
-  }
-
-  async handleCreateAmenity() {
-    const res = await this.amenityService.add(this.amenityFormData);
-    if (res.status >= 300) {
-      this.errorMessage = res.errorMessage;
-      console.log(res);
-    } else {
-      this.amenityStore.$state.data = await this.amenityService.getAll(
-        this.hotelId
-      );
-    }
-
-    // await AmenityService.post(this.amenityFormData)
-    //   .then((res) => {
-    //     if (!res.success) {
-    //       console.log(res);
-    //       return;
-    //     }
-    //     this.amenityStore.addAmenity(res.data!);
-    //   })
-    //   .catch((res) => {
-    //     console.log(res);
-    //   });
-  }
-
-  async handleEditAmenity() {
-    this.amenityFormData.id = this.selectedAmenityId;
-    const res = await this.amenityService.update(this.amenityFormData);
-    if (res.status >= 300) {
-      this.errorMessage = res.errorMessage;
-      console.log(res);
-    } else {
-      this.amenityStore.$state.data = await this.amenityService.getAll(
-        this.hotelId
-      );
-    }
-
-    // await AmenityService.put(this.selectedAmenityId!, this.amenityFormData)
-    //   .then((res) => {
-    //     if (!res.success) {
-    //       console.log(res);
-    //       return;
-    //     }
-    //     this.amenityStore.updateAmenity(
-    //       this.selectedAmenityId!,
-    //       this.amenityFormData!
-    //     );
-    //   })
-    //   .catch((res) => {
-    //     console.log(res);
-    //   });
-  }
-
-  async handleDeleteAmenity() {
-    // await await AmenityService.delete(this.selectedAmenityId!)
-    //   .then((res) => {
-    //     if (!res.success) {
-    //       console.log(res);
-    //       return;
-    //     }
-    //     this.amenityStore.deleteAmenity(this.selectedAmenityId!);
-    //     this.selectedAmenityId = null;
-    //     this.amenityFormData.name = "";
-    //     this.amenityFormData.description = "";
-    //   })
-    //   .catch((res) => {
-    //     console.log(res);
-    //   });
-  }
-}
-</script>
-
-<style></style>

@@ -1,7 +1,6 @@
 <script lang="ts">
 import type { IBooking } from "@/domain/IBooking";
 import type { IGuest } from "@/domain/IGuest";
-import type { IRoom } from "@/domain/IRoom";
 import type { IRoomType } from "@/domain/IRoomType";
 import { BookingService } from "@/services/BookingService";
 import { RoomTypeService } from "@/services/RoomTypeService";
@@ -9,7 +8,6 @@ import { useHotelStore } from "@/stores/Hotels";
 import { useSearchResultsStore } from "@/stores/SearchResults";
 
 import { Options, Vue } from "vue-class-component";
-import { routeLocationKey } from "vue-router";
 import GuestsList from "../components/GuestsList.vue";
 
 @Options({
@@ -108,8 +106,6 @@ export default class BookingCreate extends Vue {
   }
 
   async handleSaveBooking() {
-    
-
     this.validateForm();
     if (this.errorMessage?.length == 0) {
       this.guests.push(this.bookingHolder);
@@ -129,21 +125,14 @@ export default class BookingCreate extends Vue {
         console.log(res);
       } else {
         this.$router.push({
-      name: "bookingadded",
-      params: {
-        roomType: this.roomType?.name,
-        price: this.roomType?.totalPrice,
-        bookingHolderEmail: this.bookingHolder.email,
-        numberOfNights: this.nightCount,
-      },
-    });
-
-        //
-        //
-        //
-        //
-
-        ///TODO: mine kuhugi: booking confirmed
+          name: "bookingadded",
+          params: {
+            roomType: this.roomType?.name,
+            price: this.roomType?.totalPrice,
+            bookingHolderEmail: this.bookingHolder.email,
+            numberOfNights: this.nightCount,
+          },
+        });
       }
     }
   }

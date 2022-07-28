@@ -1,15 +1,4 @@
-<template>
-  <div class="container">
-    <div class="d-flex justify-content-between">
-      <span class="fs-4 link-dark">Bookings</span>
-      <button type="button" class="btn btn-primary btn-sm">
-        Create New
-      </button>
-    </div>
-    <hr/>
-    <BookingsList :bookings="bookings"/>
-  </div>
-</template>
+
 
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
@@ -45,17 +34,19 @@ export default class BookingIndex extends Vue{
 
     const roomTypes = await this.roomTypeService.getAll(this.hotelId)
     this.roomTypeStore.$state.data = roomTypes;
-    // await ReservationService.getAllHotelReservations(this.hotelId)
-    //   .then((res) => {
-    //       if (res.data != null) {
-    //         this.reservations = res.data
-    //       }
-    //     }
-    //   );
   }
 }
 </script>
 
-<style>
-
-</style>
+<template>
+  <div class="container">
+    <div class="d-flex justify-content-between">
+      <span class="fs-4 link-dark">Bookings</span>
+      <button type="button" class="btn btn-primary btn-sm">
+        Create New TODO!!
+      </button>
+    </div>
+    <hr/>
+    <BookingsList :bookings="bookings"/>
+  </div>
+</template>

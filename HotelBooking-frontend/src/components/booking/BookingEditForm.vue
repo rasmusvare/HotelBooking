@@ -160,13 +160,6 @@ import { Options, Vue } from "vue-class-component";
       this.bookingData.email = this.hotel.email;
       this.hotelbookingDataFormData.address = this.hotel.address;
       this.bookingData.telephoneNumber = this.hotel.telephoneNumber;
-
-      //       hotelId: string;
-      //   roomTypeId: string;
-      //   dateFrom: Date | string;
-      //   dateTo: Date | string;
-      //   noOfGuests: number;
-      //   guests: IGuest[];
     },
   },
 })

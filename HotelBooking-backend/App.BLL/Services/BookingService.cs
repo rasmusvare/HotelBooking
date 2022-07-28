@@ -22,14 +22,15 @@ public class BookingService : BaseEntityService<App.BLL.DTO.Booking, App.DAL.DTO
     public async Task<IEnumerable<Booking>> GetAllHotelAsync(Guid hotelId, bool noTracking = true)
     {
         var bookings = (await Repository.GetAllHotelAsync(hotelId, noTracking)).Select(x => Mapper.Map(x)!).ToList();
-        
+
         foreach (var booking in bookings)
         {
             booking.BookingHolder = FindBookingHolder(booking.Guests!);
             booking.BookingHolderId = booking.BookingHolder.Id;
         }
 
-        return bookings;    }
+        return bookings;
+    }
 
     public async Task<IEnumerable<Booking>> SearchBookingsByEmail(string email, bool noTracking = true)
     {
@@ -89,9 +90,12 @@ public class BookingService : BaseEntityService<App.BLL.DTO.Booking, App.DAL.DTO
 //TODO!
     public override Booking Add(Booking booking)
     {
-        // var numberOfNights = booking.DateTo.DayNumber - booking.DateFrom.DayNumber;
+        var numberOfNights = booking.DateTo.DayNumber - booking.DateFrom.DayNumber;
         //
+
+        booking.TotalPrice = numberOfNights * Repository.GetPricePerNight(booking.RoomTypeId).Result;
         // booking.TotalPrice = numberOfNights
+        
         return base.Add(booking);
     }
 

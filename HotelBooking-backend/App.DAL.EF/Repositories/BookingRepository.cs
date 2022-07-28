@@ -80,12 +80,24 @@ public class BookingRepository : BaseEntityRepository<App.DAL.DTO.Booking, App.D
         return Mapper.Map(booking);
         // return base.FirstOrDefaultAsync(id, noTracking);
     }
-    
-    
+
+
+    public async Task<decimal> GetPricePerNight(Guid roomTypeId)
+    {
+        var roomType = await RepoDbContext.RoomTypes.FirstOrDefaultAsync(r => r.Id == roomTypeId);
+
+        if (roomType == null)
+        {
+            return 0;
+        }
+
+        return roomType.PricePerNight;
+    }
 
     // public override Booking Add(Booking booking)
-    // {
-    //     
+    // {.
+    //     RepoDbContext.RoomTypes.FirstOrDefault(booking.RoomTypeId);
+    // }
     //     
     //     foreach (var guest in booking.Guests)
     //     {

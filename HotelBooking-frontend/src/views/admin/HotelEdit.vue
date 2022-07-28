@@ -9,7 +9,6 @@ import HotelRoomTypesEdit from "@/components/hotel/HotelRoomTypesEdit.vue";
 import HotelEditForm from "@/components/hotel/HotelEditForm.vue";
 
 import { HotelService } from "@/services/HotelService";
-// import AmenityService from "@/services/AmenityService";
 import { RoomTypeService } from "@/services/RoomTypeService";
 import type { IHotel } from "@/domain/IHotel";
 import { AmenityService } from "@/services/AmenityService";
@@ -55,11 +54,6 @@ export default class HotelEdit extends Vue {
     const amenities = await this.amenityService.getAll(this.hotelId);
     this.amenityStore.$state.data = amenities;
 
-    // await AmenityService.getAllHotelAmenities(this.hotelId).then((res) => {
-    //   if (res.data != null) {
-    //     this.amenityStore.$state.data = res.data;
-    //   }
-    // });
     const roomTypes = await this.roomTypeService.getAll(this.hotelId);
     this.roomTypeStore.$state.data = roomTypes;
   }

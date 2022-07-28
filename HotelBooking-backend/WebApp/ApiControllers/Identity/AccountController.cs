@@ -4,17 +4,14 @@ using System.Net;
 using System.Security.Claims;
 using App.Contracts.BLL;
 using App.DAL.EF;
-using App.Domain;
 using App.Domain.Identity;
 using App.Public.DTO.v1.ErrorResponses;
 using App.Public.DTO.v1.Identity;
-using App.Public.DTO.v1.Mappers;
 using AutoMapper;
 using Base.Extensions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using SQLitePCL;
 
 namespace WebApp.ApiControllers.Identity;
 

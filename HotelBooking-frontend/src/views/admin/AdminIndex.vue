@@ -102,22 +102,19 @@
 </template>
 
 <script lang="ts">
-// import HotelService from "@/services/HotelService";
-// import IdentityService from "@/services/IdentityService";
-// import { useHotelStore } from "@/stores/Hotel";
 import { Options, Vue } from "vue-class-component";
 import { useHotelStore } from "@/stores/Hotels";
 import { HotelService } from "@/services/HotelService";
 import HotelDropdown from "@/components/HotelDropdown.vue";
 import { IdentityService } from "@/services/IdentityService";
 import { useIdentityStore } from "@/stores/identity";
-// import HotelDropdown from "../components/dashboard/HotelDropdown.vue";
 
 @Options({
   components: {
     HotelDropdown
   },
 })
+
 export default class AdminIndex extends Vue {
   hotelStore = useHotelStore();
   hotelService = new HotelService();

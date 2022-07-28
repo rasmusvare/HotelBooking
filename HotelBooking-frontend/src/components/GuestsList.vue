@@ -1,37 +1,36 @@
 <script lang="ts">
 import type { IGuest } from "@/domain/IGuest";
-import type { IRoomType } from "@/domain/IRoomType";
 import { useSearchResultsStore } from "@/stores/SearchResults";
 import { Options, Vue } from "vue-class-component";
 import GuestAddModal from "./GuestAddModal.vue";
 
 @Options({
   props: {
-    guests: Object as unknown as IGuest[]
-    // searchResults: Object as unknown as IRoomType[],
+    guests: Object as unknown as IGuest[],
   },
   components: {
-    GuestAddModal
-  }
+    GuestAddModal,
+  },
 })
 export default class GuestsList extends Vue {
   guests!: IGuest[];
 
   searchResultStore = useSearchResultsStore();
 
-  async handleOpenGuestModal(){
-
-  }
+  async handleOpenGuestModal() {}
 }
 </script>
 
 <template>
   <div class="container mt-5">
-    <div class="d-flex justify-content-between" v-if="searchResultStore.numberOfGuests > 1">
+    <div
+      class="d-flex justify-content-between"
+      v-if="searchResultStore.numberOfGuests > 1"
+    >
       <h3>Guests</h3>
-       <div>
+      <div>
         <button
-        v-if="guests.length < searchResultStore.numberOfGuests - 1"
+          v-if="guests.length < searchResultStore.numberOfGuests - 1"
           class="btn btn-primary btn-sm"
           data-bs-toggle="modal"
           :data-bs-target="'#addGuestModal'"
@@ -39,13 +38,13 @@ export default class GuestsList extends Vue {
         >
           Create New
         </button>
-                <GuestAddModal :guests="guests" />
-
-    </div>
+        <GuestAddModal :guests="guests" />
+      </div>
     </div>
     <div v-if="guests.length == 0 && searchResultStore.numberOfGuests > 1">
       <h5 class="mt-4">
-    Please add {{ searchResultStore.numberOfGuests - 1 }} guest(s) to the booking
+        Please add {{ searchResultStore.numberOfGuests - 1 }} guest(s) to the
+        booking
       </h5>
     </div>
     <table v-if="guests.length > 0" class="table">
@@ -65,12 +64,12 @@ export default class GuestsList extends Vue {
               <span>{{ each.firstName }}</span>
             </td>
             <td>
-              <span>{{each.lastName}}</span>
+              <span>{{ each.lastName }}</span>
             </td>
             <td>
               <span> {{ each.idCode }}</span>
             </td>
-             <td>
+            <td>
               <span> {{ each.email }}</span>
             </td>
             <!-- <td style="width: 10%">

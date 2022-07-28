@@ -53,17 +53,8 @@ export default class GuestAddModal extends Vue {
         phoneNumber: "",
         isBookingOwner: false,
       };
-      // this.$refs.addGuest.modal('hide')
-      // const element = "#addGuestModal";
-      //       $(element).slideUp("normal", function () {
-      //         $(element).removeClass("show");
-      //         $(element).style.display attr("style display", null);
-      //         $('')
-      //       });
 
       this.addGuestModal.hide();
-
-      // this.errorMessage = ["Guest added"];
     }
   }
 
@@ -181,5 +172,3 @@ export default class GuestAddModal extends Vue {
     </div>
   </div>
 </template>
-
-<style></style>

@@ -1,3 +1,67 @@
+<script lang="ts">
+import type { IHotel } from "@/domain/IHotel";
+import { HotelService } from "@/services/HotelService";
+import { useHotelStore } from "@/stores/Hotels";
+import { Options, Vue } from "vue-class-component";
+
+@Options({
+  props: {
+    hotel: Object as unknown as IHotel,
+  },
+  watch: {
+    hotel() {
+      this.hotelFormData.id = this.hotel.id;
+      this.hotelFormData.name = this.hotel.name;
+      this.hotelFormData.description = this.hotel.description;
+      this.hotelFormData.email = this.hotel.email;
+      this.hotelFormData.address = this.hotel.address;
+      this.hotelFormData.telephoneNumber = this.hotel.telephoneNumber;
+    },
+  },
+})
+export default class HotelEditForm extends Vue {
+  hotelStore = useHotelStore();
+  hotelService = new HotelService();
+  hotel!: IHotel;
+
+  errorMessage: Array<string> | null | undefined = null;
+
+  hotelFormData: IHotel = {
+    name: "",
+    description: "",
+    email: "",
+    address: "",
+    telephoneNumber: "",
+  };
+
+  async handleEditHotel() {
+    const res = await this.hotelService.update(this.hotelFormData);
+    if (res.status >= 300) {
+      this.errorMessage = res.errorMessage;
+      console.log(res);
+    } else {
+      this.hotelStore.$state.data = await this.hotelService.getAll();
+    }
+  }
+
+  async handleDeleteHotel() {
+    // await HotelService.delete(this.hotel.id!)
+    //     .then((res) => {
+    //         if (!res.success) {
+    //             console.log(res)
+    //             return;
+    //         }
+    //         this.hotelStore.deleteHotel(this.hotel.id!);
+    //         this.$router.push('/dashboard');
+    //     }
+    //     ).catch((res) => {
+    //         console.log(res);
+    //     }
+    // );
+  }
+}
+</script>
+
 <template>
   <h1 class="h3 mb-3 fw-normal">Details</h1>
   <div class="form-floating">
@@ -56,82 +120,3 @@
     </button>
   </div>
 </template>
-
-<script lang="ts">
-import type { IHotel } from "@/domain/IHotel";
-import { HotelService } from "@/services/HotelService";
-import { useHotelStore } from "@/stores/Hotels";
-import { Options, Vue } from "vue-class-component";
-
-@Options({
-  props: {
-    hotel: Object as unknown as IHotel,
-  },
-  watch: {
-    hotel() {
-      this.hotelFormData.id = this.hotel.id;
-      this.hotelFormData.name = this.hotel.name;
-      this.hotelFormData.description = this.hotel.description;
-      this.hotelFormData.email = this.hotel.email;
-      this.hotelFormData.address = this.hotel.address;
-      this.hotelFormData.telephoneNumber = this.hotel.telephoneNumber;
-    },
-  },
-})
-export default class HotelEditForm extends Vue {
-  hotelStore = useHotelStore();
-  hotelService = new HotelService();
-  hotel!: IHotel;
-
-  errorMessage: Array<string> | null | undefined = null;
-
-  hotelFormData: IHotel = {
-    name: "",
-    description: "",
-    email: "",
-    address: "",
-    telephoneNumber: "",
-  };
-
-  async handleEditHotel() {
-    const res = await this.hotelService.update(this.hotelFormData);
-    if (res.status >= 300) {
-      this.errorMessage = res.errorMessage;
-      console.log(res);
-    } else {
-      this.hotelStore.$state.data = await this.hotelService.getAll();
-    }
-
-    // await HotelService.put(this.hotel.id!, this.hotelFormData)
-    //     .then((res) => {
-    //         if (!res.success) {
-    //             console.log(res)
-    //             return;
-    //         }
-    //         this.hotelStore.updateHotel(this.hotel.id!, this.hotelFormData)
-    //     }
-    //     ).catch((res) => {
-    //         console.log(res);
-    //     }
-    // );
-  }
-
-  async handleDeleteHotel() {
-    // await HotelService.delete(this.hotel.id!)
-    //     .then((res) => {
-    //         if (!res.success) {
-    //             console.log(res)
-    //             return;
-    //         }
-    //         this.hotelStore.deleteHotel(this.hotel.id!);
-    //         this.$router.push('/dashboard');
-    //     }
-    //     ).catch((res) => {
-    //         console.log(res);
-    //     }
-    // );
-  }
-}
-</script>
-
-<style></style>

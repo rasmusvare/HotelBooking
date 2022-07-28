@@ -16,6 +16,7 @@ import BookingAdded from "@/views/BookingAdded.vue";
 
 import BookingEdit from "@/views/admin/BookingEdit.vue";
 import BookingSearch from "@/views/BookingSearch.vue";
+import BookingEditClient from "@/views/BookingEditClient.vue";
 
 
 const router = createRouter({
@@ -31,12 +32,13 @@ const router = createRouter({
         { path: "/booking", name: "bookingcreate", component: BookingCreate, props: true},
         { path: "/bookingadded", name: "bookingadded", component: BookingAdded, props: true},
         { path: "/bookingsearch", name: "bookingsearch", component: BookingSearch, props: true},
+        { path: "/bookingedit/:bookingId", name: "bookingeditclient", component: BookingEditClient, props: true},
       // ]
     // },
     {
       path: "/admin", name: "admin", component: () => import("@/views/admin/AdminIndex.vue"),
       children: [
-        { path: 'hotelcreate', name: 'hotelcreate', component: RoomCreate },
+        // { path: 'hotelcreate', name: 'hotelcreate', component: RoomCreate },
         { path: ":hotelId/rooms", name: "roomindex", component: RoomIndex, props: true },
         { path: ':hotelId/details', name: 'hoteledit', component: HotelEdit, props: true },
         { path: ':hotelId/room/:roomId', name: 'roomedit', component: RoomEdit, props: true },

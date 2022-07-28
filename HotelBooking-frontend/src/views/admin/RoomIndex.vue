@@ -1,3 +1,43 @@
+<script lang="ts">
+import { Options, Vue } from "vue-class-component";
+
+import type { IRoom } from "@/domain/IRoom";
+
+import { useRoomTypeStore } from "@/stores/RoomTypes";
+import RoomCreate from "@/components/room/RoomCreate.vue";
+import { RoomTypeService } from "@/services/RoomTypeService";
+import { RoomService } from "@/services/RoomService";
+
+@Options({
+  components: {
+    RoomCreate,
+  },
+  props: {
+    hotelId: String,
+  },
+})
+export default class RoomIndex extends Vue {
+  roomTypeStore = useRoomTypeStore();
+  roomTypeService = new RoomTypeService();
+  roomService = new RoomService();
+
+  hotelId!: string;
+
+  rooms: IRoom[] = [];
+
+  async mounted() {
+    this.rooms = await this.roomService.getAll(this.hotelId);
+    const roomTypes = await this.roomTypeService.getAll(this.hotelId);
+    this.roomTypeStore.$state.data = roomTypes;
+  }
+
+  async handleOpenRoomModal() {
+    const roomTypes = await this.roomTypeService.getAll(this.hotelId);
+    this.roomTypeStore.$state.data = roomTypes;
+  }
+}
+</script>
+
 <template>
   <div v-if="hotelId !== undefined" class="container">
     <div class="d-flex justify-content-between">
@@ -11,7 +51,7 @@
         >
           Create New
         </button>
-        <RoomCreate v-bind:key="hotelId" :hotelId=hotelId :rooms="rooms" />
+        <RoomCreate v-bind:key="hotelId" :hotelId="hotelId" :rooms="rooms" />
       </div>
     </div>
 
@@ -41,8 +81,10 @@
           <td>
             <span>{{ room.roomNumber }}</span>
           </td>
-           <td>
-            <span>{{ roomTypeStore.getRoomTypeById(room.roomTypeId)?.name }}</span>
+          <td>
+            <span>{{
+              roomTypeStore.getRoomTypeById(room.roomTypeId)?.name
+            }}</span>
           </td>
           <td style="width: 10%">
             <RouterLink :to="{ name: 'roomedit', params: { roomId: room.id } }">
@@ -53,58 +95,4 @@
       </tbody>
     </table>
   </div>
-  <!--      </div>-->
-  <!--    </div>-->
-  <!--  </div>-->
-  <!--  </div>-->
 </template>
-
-<script lang="ts">
-import { Options, Vue } from "vue-class-component";
-
-// import type { IHotelSection } from "@/domain/IHotelSection";
-import type { IRoom } from "@/domain/IRoom";
-
-import { useRoomTypeStore } from "@/stores/RoomTypes";
-import RoomCreate from "@/components/room/RoomCreate.vue";
-import { RoomTypeService } from "@/services/RoomTypeService";
-import { RoomService } from "@/services/RoomService";
-
-// import RoomTypeService from "@/services/RoomTypeService";
-// import RoomService from "@/services/RoomService";
-
-// import SectionEditModal from "./SectionEditModal.vue";
-
-@Options({
-  components: {
-    RoomCreate,
-    // SectionEditModal
-  },
-  props: {
-    hotelId: String,
-  },
-})
-export default class RoomIndex extends Vue {
-  roomTypeStore = useRoomTypeStore();
-  roomTypeService = new RoomTypeService();
-  roomService  =new RoomService();
-
-  hotelId!: string;
-  // hotelId = "string";
-
-  rooms: IRoom[] = [];
-
-async mounted(){
-  this.rooms = await this.roomService.getAll(this.hotelId);
-  const roomTypes =  await this.roomTypeService.getAll(this.hotelId);
-    this.roomTypeStore.$state.data = roomTypes;
-}
-
-  async handleOpenRoomModal() {
-    const roomTypes =  await this.roomTypeService.getAll(this.hotelId);
-    this.roomTypeStore.$state.data = roomTypes;
-  }
-}
-</script>
-
-<style></style>

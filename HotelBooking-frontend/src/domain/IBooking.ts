@@ -7,6 +7,7 @@ export interface IBooking extends IBaseEntity {
   dateFrom: Date | string;
   dateTo: Date | string;
   noOfGuests: number;
+  totalPrice?: number,
   guests: IGuest[];
   bookingHolder?: IGuest;
 }

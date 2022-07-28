@@ -1,3 +1,130 @@
+<script lang="ts">
+import type { IRoomType } from "@/domain/IRoomType";
+import { RoomTypeService } from "@/services/RoomTypeService";
+import { useRoomTypeStore } from "@/stores/RoomTypes";
+import { useAmenityStore } from "@/stores/Amenities";
+import { Options, Vue } from "vue-class-component";
+import type { IAmenity } from "@/domain/IAmenity";
+
+@Options({
+  props: {
+    hotelId: String,
+  },
+})
+export default class HotelRoomTypesEdit extends Vue {
+  amenityStore = useAmenityStore();
+  roomTypeStore = useRoomTypeStore();
+  roomTypeService = new RoomTypeService();
+
+  errorMessage: Array<string> | null | undefined = null;
+
+  selectedRoomTypeId: string | null = null;
+
+  hotelId!: string;
+  roomTypeFormData: IRoomType = {
+    hotelId: "",
+    id: "",
+    name: "",
+    description: "",
+    pricePerNight: 0,
+    count: 0,
+    numberOfBeds: 1,
+    amenities: [],
+  };
+
+  mounted() {
+    this.roomTypeFormData.hotelId = this.hotelId;
+  }
+
+  handleSelectRoomType(roomType: IRoomType) {
+    this.selectedRoomTypeId = roomType.id!;
+    this.roomTypeFormData.id = this.selectedRoomTypeId;
+    this.roomTypeFormData.name = roomType.name;
+    this.roomTypeFormData.description = roomType.description;
+    this.roomTypeFormData.count = roomType.count;
+    this.roomTypeFormData.pricePerNight = roomType.pricePerNight;
+    this.roomTypeFormData.amenities = roomType.amenities;
+    this.roomTypeFormData.numberOfBeds = roomType.numberOfBeds;
+  }
+
+  handleSelectRoomAmenity(amenity: IAmenity) {
+    if (this.roomTypeFormData.amenities == undefined) {
+      this.roomTypeFormData.amenities = [];
+    }
+    if (this.roomTypeFormData.amenities?.some((e) => e.id == amenity.id)) {
+      let index = this.roomTypeFormData.amenities.findIndex(
+        (e) => e.id == amenity.id
+      );
+      if (index > -1) {
+        this.roomTypeFormData.amenities.splice(index, 1);
+      }
+      return;
+    }
+    this.roomTypeFormData.amenities.push(amenity);
+  }
+
+  async handleCreateRoomType() {
+    const res = await this.roomTypeService.add({
+      hotelId: this.roomTypeFormData.hotelId,
+
+      name: this.roomTypeFormData.name,
+      description: this.roomTypeFormData.description,
+      pricePerNight: this.roomTypeFormData.pricePerNight,
+
+      numberOfBeds: this.roomTypeFormData.numberOfBeds,
+      amenities: this.roomTypeFormData.amenities,
+    });
+    if (res.status >= 300) {
+      this.errorMessage = res.errorMessage;
+      console.log(res);
+    } else {
+      this.roomTypeStore.$state.data = await this.roomTypeService.getAll(
+        this.hotelId
+      );
+    }
+    this.clearFormData();
+  }
+
+  async handleEditRoomType() {
+    const res = await this.roomTypeService.update(this.roomTypeFormData);
+
+    if (res.status >= 300) {
+      this.errorMessage = res.errorMessage;
+      console.log(res);
+    } else {
+      this.roomTypeStore.updateRoomType(
+        this.selectedRoomTypeId!,
+        this.roomTypeFormData!
+      );
+
+      this.clearFormData();
+    }
+  }
+
+  async handleDeleteRoomType() {
+    const res = await this.roomTypeService.remove(this.selectedRoomTypeId!);
+
+    if (res.status >= 300) {
+      this.errorMessage = res.errorMessage;
+      console.log(res);
+    } else {
+      this.roomTypeStore.deleteRoomType(this.selectedRoomTypeId!);
+
+      this.clearFormData();
+    }
+  }
+
+  clearFormData() {
+    this.selectedRoomTypeId = null;
+    this.roomTypeFormData.name = "";
+    this.roomTypeFormData.description = "";
+    this.roomTypeFormData.count = 0;
+    this.roomTypeFormData.pricePerNight = 0;
+    this.roomTypeFormData.amenities = undefined;
+  }
+}
+</script>
+
 <template>
   <h1 class="h3 mb-3 fw-normal">Room Types</h1>
   <div class="d-flex">
@@ -34,7 +161,6 @@
           />
           <label for="floatingInput">Price per night</label>
         </div>
-        <!-- <div class="d-flex"> -->
         <div class="form-floating flex-grow-1">
           <input
             type="number"
@@ -135,150 +261,4 @@
       </div>
     </template>
   </div>
-  <!-- </div> -->
 </template>
-
-<script lang="ts">
-import type { IRoomType } from "@/domain/IRoomType";
-import { RoomTypeService } from "@/services/RoomTypeService";
-import { useRoomTypeStore } from "@/stores/RoomTypes";
-import { useAmenityStore } from "@/stores/Amenities";
-import { Options, Vue } from "vue-class-component";
-import type { IAmenity } from "@/domain/IAmenity";
-
-@Options({
-  props: {
-    hotelId: String,
-  },
-})
-export default class HotelRoomTypesEdit extends Vue {
-  amenityStore = useAmenityStore();
-  roomTypeStore = useRoomTypeStore();
-  roomTypeService = new RoomTypeService();
-
-  errorMessage: Array<string> | null | undefined = null;
-
-  selectedRoomTypeId: string | null = null;
-
-  hotelId!: string;
-  roomTypeFormData: IRoomType = {
-    hotelId: "",
-    id: "",
-    name: "",
-    description: "",
-    pricePerNight: 0,
-    count: 0,
-    numberOfBeds: 1,
-    amenities: [],
-  };
-
-  mounted() {
-    this.roomTypeFormData.hotelId = this.hotelId;
-  }
-
-  handleSelectRoomType(roomType: IRoomType) {
-    this.selectedRoomTypeId = roomType.id!;
-    this.roomTypeFormData.id = this.selectedRoomTypeId;
-    this.roomTypeFormData.name = roomType.name;
-    this.roomTypeFormData.description = roomType.description;
-    this.roomTypeFormData.count = roomType.count;
-    this.roomTypeFormData.pricePerNight = roomType.pricePerNight;
-    this.roomTypeFormData.amenities = roomType.amenities;
-    this.roomTypeFormData.numberOfBeds = roomType.numberOfBeds;
-  }
-
-  handleSelectRoomAmenity(amenity: IAmenity) {
-    if (this.roomTypeFormData.amenities == undefined) {
-      this.roomTypeFormData.amenities = [];
-    }
-    if (this.roomTypeFormData.amenities?.some((e) => e.id == amenity.id)) {
-      let index = this.roomTypeFormData.amenities.findIndex(
-        (e) => e.id == amenity.id
-      );
-      if (index > -1) {
-        this.roomTypeFormData.amenities.splice(index, 1);
-      }
-      return;
-    }
-    this.roomTypeFormData.amenities.push(amenity);
-  }
-
-  async handleCreateRoomType() {
-    const res = await this.roomTypeService.add(
-      {
-        hotelId: this.roomTypeFormData.hotelId,
-
-    name: this.roomTypeFormData.name,
-    description: this.roomTypeFormData.description,
-    pricePerNight:this.roomTypeFormData.pricePerNight,
-
-    numberOfBeds: this.roomTypeFormData.numberOfBeds,
-    amenities: this.roomTypeFormData.amenities,
-      }
-      );
-    if (res.status >= 300) {
-      this.errorMessage = res.errorMessage;
-      console.log(res);
-    } else {
-      this.roomTypeStore.$state.data = await this.roomTypeService.getAll(
-        this.hotelId
-      );
-    }
-    this.clearFormData();
-  }
-
-  async handleEditRoomType() {
-    const res = await this.roomTypeService.update(this.roomTypeFormData);
-
-    if (res.status >= 300) {
-      this.errorMessage = res.errorMessage;
-      console.log(res);
-    } else {
-      this.roomTypeStore.updateRoomType(
-        this.selectedRoomTypeId!,
-        this.roomTypeFormData!
-      );
-
-      this.clearFormData();
-    }
-  }
-
-  async handleDeleteRoomType() {
-    const res = await this.roomTypeService.remove(this.selectedRoomTypeId!);
-
-    if (res.status >= 300) {
-      this.errorMessage = res.errorMessage;
-      console.log(res);
-    } else {
-      this.roomTypeStore.deleteRoomType(this.selectedRoomTypeId!);
-
-      this.clearFormData();
-    }
-
-    // await RoomTypeService.delete(this.selectedRoomTypeId!)
-    //     .then((res) => {
-    //         if (!res.success) {
-    //             console.log(res)
-    //             return;
-    //         }
-    //         this.roomTypeStore.deleteRoomType(this.selectedRoomTypeId!);
-    //         this.clearFormData();
-    //     }
-    //     ).catch((res) => {
-    //         console.log(res);
-    //     }
-    // );
-  }
-
-  clearFormData() {
-    this.selectedRoomTypeId = null;
-    this.roomTypeFormData.name = "";
-    this.roomTypeFormData.description = "";
-    this.roomTypeFormData.count = 0;
-    this.roomTypeFormData.pricePerNight = 0;
-    this.roomTypeFormData.amenities = undefined;
-  }
-}
-</script>
-
-<style></style>
