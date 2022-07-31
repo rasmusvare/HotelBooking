@@ -252,6 +252,8 @@ public class RoomController : ControllerBase
     public async Task<IActionResult> DeleteRoom(Guid id)
     {
         //TODO: Check if can delete
+
+        
         var room = await _bll.Rooms.FirstOrDefaultAsync(id);
         if (room == null)
         {
@@ -272,6 +274,14 @@ public class RoomController : ControllerBase
             return NotFound(errorResponse);
         }
 
+        var futureBookings = await _bll.Bookings.GetFutureBookings(room.RoomTypeId);
+
+        foreach (var each in futureBookings)
+        {
+            _bll.Bookings.Remove(each.Id);
+            await _bll.SaveChangesAsync();
+        }
+        
         _bll.Rooms.Remove(room);
         await _bll.SaveChangesAsync();
 

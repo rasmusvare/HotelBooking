@@ -7,9 +7,9 @@ import router from "@/router";
 export default class Login extends Vue {
   identityService = new IdentityService();
   identityStore = useIdentityStore();
+  
   email = "";
   password = "";
-  error = "";
 
   errorMessage: Array<string> | null | undefined = null;
 
@@ -23,16 +23,16 @@ export default class Login extends Vue {
       } else {
         this.errorMessage = [];
         this.identityStore.$state.jwt = res.data;
+        await router.push("/admin");
       }
     }
-    await router.push("/admin");
   }
 }
 </script>
 
 <template>
   <div class="form-identity form-signin">
-    <h1 class="h3 mb-3 fw-normal">Sign in</h1>
+    <h1 class="h3 mb-3 fw-normal">Login</h1>
     <div
       v-if="errorMessage != null"
       class="text-danger validation-summary-errors"
@@ -48,7 +48,6 @@ export default class Login extends Vue {
         v-model="email"
         class="form-control form-control-top"
         id="floatingEmail"
-        :class="{ 'is-invalid': error !== '' }"
         type="email"
         placeholder="name@example.com"
       />
@@ -59,23 +58,18 @@ export default class Login extends Vue {
         v-model="password"
         class="form-control form-control-bottom"
         id="floatingPass"
-        :class="{ 'is-invalid': error !== '' }"
         type="password"
         placeholder="Password"
       />
       <label for="floatingPass">Password</label>
-      <div class="invalid-feedback">
+      <!-- <div class="invalid-feedback">
         <template v-if="error !== ''">{{ error }}</template>
-      </div>
+      </div> -->
     </div>
 
-    <div class="checkbox mb-3">
-      <!-- <label>
-          <input type="checkbox" value="remember-me"> Remember me
-      </label> -->
-    </div>
+    <div class="checkbox mb-3"></div>
     <button class="w-100 btn btn-lg btn-primary" @click="handleLoginSubmit()">
-      Sign in
+      Login
     </button>
   </div>
 </template>

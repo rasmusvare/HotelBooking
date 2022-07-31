@@ -3,7 +3,6 @@ import type { ISearchParameters } from "@/domain/ISearchParameters";
 import httpClient from "@/http-client";
 import type { IRoomType } from "@/domain/IRoomType";
 import type { IServiceResult } from "@/domain/IServiceResult";
-// import { useIdentityStore } from "@/stores/identity";
 
 const apiVersion = "v1";
 

@@ -1,18 +1,18 @@
-import { defineStore } from 'pinia'
+import { defineStore } from "pinia";
 import type { IHotel } from "@/domain/IHotel";
 
-
 export const useHotelStore = defineStore({
-  id: 'hotelstore',
+  id: "hotelstore",
 
   state: () => ({
     data: [] as IHotel[],
-    current: null as IHotel | null
+    current: null as IHotel | null,
   }),
 
   getters: {
     getHotelById: (state) => {
-      return (hotelId: string) => state.data.find((hotel) => hotel.id === hotelId)
+      return (hotelId: string) =>
+        state.data.find((hotel) => hotel.id === hotelId);
     },
   },
 
@@ -22,7 +22,7 @@ export const useHotelStore = defineStore({
     },
 
     updateHotel(id: string, hotel: IHotel) {
-      const res = this.data[this.data.findIndex(e => e.id == id)];
+      const res = this.data[this.data.findIndex((e) => e.id == id)];
       if (res != null) {
         res.name = hotel.name;
         res.description = hotel.description;
@@ -30,7 +30,7 @@ export const useHotelStore = defineStore({
     },
 
     deleteHotel(id: string) {
-      this.data = this.data.filter(e => e.id !== id)
-    }
-  }
-})
+      this.data = this.data.filter((e) => e.id !== id);
+    },
+  },
+});

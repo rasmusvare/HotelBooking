@@ -129,6 +129,11 @@ addDays(date: Date, days: number) {
   <div class="container">
     <div class="px-4 py-5 my-5 text-center">
       <div>
+        <div>
+        <RouterLink to="/">Home</RouterLink>
+        |
+        <RouterLink to="/bookingsearch">Search bookings</RouterLink>
+      </div>
         <h3 class="mt-2">Edit booking for {{ roomType.name }}</h3>
         <p>
           Total price {{ bookingData.totalPrice }}€ (for

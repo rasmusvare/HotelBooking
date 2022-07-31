@@ -57,7 +57,7 @@ export default class Home extends Vue {
         {{ hotelStore.current?.telephoneNumber }}
       </p>
       <div class="col-lg-10 mx-auto mt-5">
-        <SearchRoom :hotelId="hotelId"/>
+        <SearchRoom :hotelId="hotelId" />
       </div>
       <div class="col-lg-10 mx-auto">
         <SearchResults />

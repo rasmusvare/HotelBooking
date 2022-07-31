@@ -70,7 +70,7 @@ public static class AppDataHelper
             var users =
                 new (string username, string firstname, string lastname, string roles, string password, string idCode)[]
                 {
-                    ("admin@hotell.ee", "Hotelli", "Admin", "user,admin", "Kala.maja1", "38902180335"),
+                    ("admin@hotell.ee", "Hotelli", "Admin", "admin", "Kala.maja1", "38902180335"),
                     ("rasmus@hotell.ee", "Rasmus", "Vare", "user", "Kala.maja1", "38002210335"),
                 };
 
@@ -167,7 +167,7 @@ public static class AppDataHelper
             }
 
             // Add rooms
-            // var rooms = new (Guid hotelId, string)
+            // var rooms = new (Guid hotelId, string roomNumber, string roomType)
         }
     }
 }

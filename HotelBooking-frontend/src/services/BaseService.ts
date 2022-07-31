@@ -1,7 +1,6 @@
 import httpClient from "@/http-client";
 import { AxiosError } from "axios";
 import type { IServiceResult } from "@/domain/IServiceResult";
-// import type { IJWTResponse } from "@/domain/IJWTResponse";
 import { IdentityService } from "@/services/IdentityService";
 import { useIdentityStore } from "@/stores/identity";
 import router from "@/router";
@@ -14,9 +13,6 @@ export class BaseService<TEntity extends IBaseEntity> {
   constructor(public path: string, public apiVersion: string) {}
 
   async getAll(id?: string, extraPath?: string): Promise<TEntity[]> {
-    // if (!this.identityStore.$state.jwt) {
-    //   await router.push("/identity/account/login");
-    // }
     try {
       let response;
       if (id == null) {
@@ -27,7 +23,9 @@ export class BaseService<TEntity extends IBaseEntity> {
         });
       } else {
         response = await httpClient.get(
-          `/${this.apiVersion}/${this.path}/${extraPath == null ? id : extraPath + "/" + id}`,
+          `/${this.apiVersion}/${this.path}/${
+            extraPath == null ? id : extraPath + "/" + id
+          }`,
           {
             headers: {
               Authorization: "bearer " + this.identityStore.$state.jwt?.token,
@@ -42,11 +40,14 @@ export class BaseService<TEntity extends IBaseEntity> {
 
       if (!this.identityStore.$state.jwt) return [];
 
-      const response = await httpClient.get(`/${this.apiVersion}/${this.path}`, {
-        headers: {
-          Authorization: "bearer " + this.identityStore.$state.jwt?.token,
-        },
-      });
+      const response = await httpClient.get(
+        `/${this.apiVersion}/${this.path}`,
+        {
+          headers: {
+            Authorization: "bearer " + this.identityStore.$state.jwt?.token,
+          },
+        }
+      );
       const res = response.data as TEntity[];
       return res;
     }
@@ -54,22 +55,28 @@ export class BaseService<TEntity extends IBaseEntity> {
 
   async get(id: string): Promise<TEntity | null> {
     try {
-      const response = await httpClient.get(`/${this.apiVersion}/${this.path}/details/${id}`, {
-        headers: {
-          Authorization: "bearer " + this.identityStore.$state.jwt?.token,
-        },
-      });
+      const response = await httpClient.get(
+        `/${this.apiVersion}/${this.path}/details/${id}`,
+        {
+          headers: {
+            Authorization: "bearer " + this.identityStore.$state.jwt?.token,
+          },
+        }
+      );
       const res = response.data as TEntity;
       return res;
     } catch (e) {
       await this.handleError(e);
       if (!this.identityStore.$state.jwt) return null;
 
-      const response = await httpClient.get(`/${this.apiVersion}/${this.path}`, {
-        headers: {
-          Authorization: "bearer " + this.identityStore.$state.jwt?.token,
-        },
-      });
+      const response = await httpClient.get(
+        `/${this.apiVersion}/${this.path}`,
+        {
+          headers: {
+            Authorization: "bearer " + this.identityStore.$state.jwt?.token,
+          },
+        }
+      );
       const res = response.data as TEntity;
       return res;
     }
@@ -78,11 +85,15 @@ export class BaseService<TEntity extends IBaseEntity> {
   async add(entity: TEntity): Promise<IServiceResult<TEntity | void>> {
     let response;
     try {
-      response = await httpClient.post(`/${this.apiVersion}/${this.path}`, entity, {
-        headers: {
-          Authorization: "bearer " + this.identityStore.$state.jwt?.token,
-        },
-      });
+      response = await httpClient.post(
+        `/${this.apiVersion}/${this.path}`,
+        entity,
+        {
+          headers: {
+            Authorization: "bearer " + this.identityStore.$state.jwt?.token,
+          },
+        }
+      );
     } catch (e) {
       return this.handleError(e);
     }
@@ -93,11 +104,15 @@ export class BaseService<TEntity extends IBaseEntity> {
   async update(entity: TEntity): Promise<IServiceResult<void>> {
     let response;
     try {
-      response = await httpClient.put(`/${this.apiVersion}/${this.path}/${entity.id}`, entity, {
-        headers: {
-          Authorization: "bearer " + this.identityStore.$state.jwt?.token,
-        },
-      });
+      response = await httpClient.put(
+        `/${this.apiVersion}/${this.path}/${entity.id}`,
+        entity,
+        {
+          headers: {
+            Authorization: "bearer " + this.identityStore.$state.jwt?.token,
+          },
+        }
+      );
     } catch (e) {
       return this.handleError(e);
     }
@@ -108,11 +123,14 @@ export class BaseService<TEntity extends IBaseEntity> {
   async remove(id: string): Promise<IServiceResult<void>> {
     let response;
     try {
-      response = await httpClient.delete(`/${this.apiVersion}/${this.path}/${id}`, {
-        headers: {
-          Authorization: "bearer " + this.identityStore.$state.jwt?.token,
-        },
-      });
+      response = await httpClient.delete(
+        `/${this.apiVersion}/${this.path}/${id}`,
+        {
+          headers: {
+            Authorization: "bearer " + this.identityStore.$state.jwt?.token,
+          },
+        }
+      );
     } catch (e) {
       return this.handleError(e);
     }
@@ -127,7 +145,6 @@ export class BaseService<TEntity extends IBaseEntity> {
 
       if (error.response?.status == 401 && !this.identityStore.$state.jwt) {
         await router.push("/identity/account/login");
-        // window.location.replace("identity/account/login");
       }
 
       if (

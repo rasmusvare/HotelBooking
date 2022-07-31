@@ -227,7 +227,7 @@ public class AccountController : ControllerBase
         }
 
         var identityResultRoles = _userManager.AddToRoleAsync(appUser,
-                "user")
+                "admin")
             .Result;
 
 
@@ -358,9 +358,6 @@ public class AccountController : ControllerBase
             };
             return BadRequest(errorResponse);
         }
-
-
-        // TODO: validate token signature
 
         var userEmail = jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
 

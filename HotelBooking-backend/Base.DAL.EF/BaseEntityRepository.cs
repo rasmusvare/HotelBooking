@@ -9,8 +9,6 @@ using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 
 namespace Base.DAL.EF;
 
-//TODO: Do not fetch unnecessary data from DB on every request - look into AutoMapper functionality
-
 public class
     BaseEntityRepository<TDalEntity, TDomainEntity, TDbContext> : BaseEntityRepository<TDalEntity, TDomainEntity, Guid,
         TDbContext>
@@ -114,7 +112,6 @@ public class BaseEntityRepository<TDalEntity, TDomainEntity, TKey, TDbContext> :
 
         if (entity == null)
         {
-            // TODO: implement custom exception for entity not found
             throw new NullReferenceException($"Entity {typeof(TDalEntity).Name} with id {id} was not found!");
         }
 
@@ -158,7 +155,6 @@ public class BaseEntityRepository<TDalEntity, TDomainEntity, TKey, TDbContext> :
 
         if (entity == null)
         {
-            // TODO: implement custom exception for entity not found
             throw new NullReferenceException($"Entity {typeof(TDalEntity).Name} with id {id} was not found!");
         }
 

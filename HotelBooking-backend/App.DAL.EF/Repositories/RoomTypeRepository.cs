@@ -29,12 +29,6 @@ public class RoomTypeRepository : BaseEntityRepository<App.DAL.DTO.RoomType, App
     public async Task<IEnumerable<RoomType>> SearchAvailableRooms(Guid hotelId, DateOnly startDate, DateOnly endDate,
         int noOfGuests, bool noTracking = true)
     {
-        // var startDateComponents = startDate.Split("-").Select(d=>int.Parse(d)).ToList();
-        // var start = new DateOnly(startDateComponents[0], startDateComponents[1], startDateComponents[2]);
-        //
-        // var endDateComponents = endDate.Split("-").Select(d=>int.Parse(d)).ToList();
-        // var end = new DateOnly(endDateComponents[0], endDateComponents[1], endDateComponents[2]);
-
         var query = CreateQuery(noTracking);
 
         var availableRoomTypes = await query

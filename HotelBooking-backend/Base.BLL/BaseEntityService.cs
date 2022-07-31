@@ -43,7 +43,7 @@ public class BaseEntityService<TBllEntity, TDalEntity, TRepository, TKey> : IEnt
         return Mapper.Map(Repository.Add(dalEntity))!;
     }
 
-    public TBllEntity Update(TBllEntity entity)
+    public virtual TBllEntity Update(TBllEntity entity)
     {
             TDalEntity dalEntity;
             if (!_entityCache.ContainsKey(entity))

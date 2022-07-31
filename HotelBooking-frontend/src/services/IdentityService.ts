@@ -35,7 +35,6 @@ export class IdentityService {
     password: string,
     firstName: string,
     lastName: string,
-    idCode: string
   ): Promise<IServiceResult<IJWTResponse | null>> {
     try {
       const registerInfo = {
@@ -43,7 +42,6 @@ export class IdentityService {
         password,
         firstName,
         lastName,
-        idCode,
       };
 
       const response = await httpClient.post(
@@ -71,7 +69,6 @@ export class IdentityService {
       this.identityStore.$state.jwt = response.data;
       return {
         status: response.status,
-        // data: response.data as IJWTResponse,
       };
     } catch (e) {
       return this.returnError(e);
@@ -82,8 +79,6 @@ export class IdentityService {
     if (error instanceof AxiosError) {
       const errors: string[] = [];
       const keys = Object.keys(error.response?.data.errors);
-      // console.log(keys);
-      // console.log(typeof error.response?.data.errors["email"]);
 
       keys.forEach((key) => {
         // eslint-disable-next-line no-unsafe-optional-chaining

@@ -1,5 +1,4 @@
 import { defineStore } from "pinia";
-import type { IJWTResponse } from "@/domain/IJWTResponse";
 import type { IRoomType } from "@/domain/IRoomType";
 
 export const useSearchResultsStore = defineStore({
@@ -8,7 +7,7 @@ export const useSearchResultsStore = defineStore({
     data: [] as IRoomType[] | undefined,
     startdate: "",
     enddate: "",
-    numberOfGuests: 1
+    numberOfGuests: 1,
   }),
   getters: {},
   actions: {},

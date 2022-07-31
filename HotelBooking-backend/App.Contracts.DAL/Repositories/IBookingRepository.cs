@@ -7,6 +7,7 @@ public interface IBookingRepository : IEntityRepository<Booking>, IBookingReposi
 {
     Task<IEnumerable<Booking>> GetBookingsForRoomType(Booking booking, bool noTracking = true);
     Task<IEnumerable<Booking>> SearchBookingsByEmail(string email, bool noTracking = true);
+    Task<IEnumerable<Booking>> GetFutureBookings(Guid roomTypeId, bool noTracking = true);
     Task<decimal> GetPricePerNight(Guid roomTypeId);
 
 

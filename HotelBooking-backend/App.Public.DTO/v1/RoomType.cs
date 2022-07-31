@@ -5,7 +5,6 @@ namespace App.Public.DTO.v1;
 public class RoomType : DomainEntityId
 {
     public Guid HotelId { get; set; }
-    // public Hotel? Hotel { get; set; }
 
     public string Name { get; set; } = default!;
     public string Description { get; set; } = default!;
@@ -16,6 +15,4 @@ public class RoomType : DomainEntityId
 
 
     public ICollection<Amenity>? Amenities { get; set; }
-    // public ICollection<Room>? Rooms { get; set; }
-    // public ICollection<Booking>? Bookings { get; set; }
 }

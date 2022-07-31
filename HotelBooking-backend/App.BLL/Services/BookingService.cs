@@ -1,3 +1,4 @@
+using System.Net.Mail;
 using System.Threading.Channels;
 using App.BLL.DTO;
 using App.Contracts.BLL.Services;
@@ -44,6 +45,11 @@ public class BookingService : BaseEntityService<App.BLL.DTO.Booking, App.DAL.DTO
         }
 
         return bookings;
+    }
+
+    public async Task<IEnumerable<Booking>> GetFutureBookings(Guid roomTypeId, bool noTracking = true)
+    {
+        return (await Repository.GetFutureBookings(roomTypeId, noTracking)).Select(x => Mapper.Map(x)!);
     }
 
     public async Task<Booking?> GetBooking(Guid bookingId, bool noTracking = true)
@@ -103,9 +109,23 @@ public class BookingService : BaseEntityService<App.BLL.DTO.Booking, App.DAL.DTO
         {
             validationErrors.Add("No rooms available for the selected time period");
         }
+
+        foreach (var guest in booking.Guests!)
+        {
+            if (guest.FirstName == "" || guest.LastName == "")
+            {
+                validationErrors.Add("Please specify the first and last names for all guests");
+            }
+
+            if (guest.IdCode == "")
+            {
+                validationErrors.Add("Please specify the national identification number for all guests");
+            }
+        }
         
         return validationErrors;
 
+        
         //TODO: VALIDATE GUEST EMAIL, PHONE, ETC...
         //TODO!
     }
@@ -118,7 +138,14 @@ public class BookingService : BaseEntityService<App.BLL.DTO.Booking, App.DAL.DTO
         
         return base.Add(booking);
     }
-    
+
+    public override Booking Update(Booking booking)
+    {
+        var numberOfNights = booking.DateTo.DayNumber - booking.DateFrom.DayNumber;
+        booking.TotalPrice = numberOfNights * Repository.GetPricePerNight(booking.RoomTypeId).Result;
+        
+        return base.Update(booking);
+    }
 
     private Guest FindBookingHolder(IEnumerable<Guest> guests)
     {

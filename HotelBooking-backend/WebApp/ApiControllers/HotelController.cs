@@ -158,8 +158,6 @@ public class HotelController : ControllerBase
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<Hotel>> PostHotel(Hotel hotel)
     {
-        //TODO: Check permissions
-
         var bllEntity = _hotelMapper.Map(hotel)!;
 
         _bll.Hotels.Add(bllEntity);
@@ -203,8 +201,6 @@ public class HotelController : ControllerBase
             };
             return NotFound(errorResponse);
         }
-
-        // TODO: Remove rooms etc...
 
         _bll.Hotels.Remove(hotel);
         await _bll.SaveChangesAsync();

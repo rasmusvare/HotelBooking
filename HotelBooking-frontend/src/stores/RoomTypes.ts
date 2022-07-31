@@ -26,8 +26,8 @@ export const useRoomTypeStore = defineStore({
         res.hotelId = roomType.hotelId;
         res.name = roomType.name;
         res.description = roomType.description;
-        res.pricePerNight = roomType.pricePerNight
-        res.numberOfBeds = roomType.numberOfBeds
+        res.pricePerNight = roomType.pricePerNight;
+        res.numberOfBeds = roomType.numberOfBeds;
         res.count = roomType.count;
       }
     },

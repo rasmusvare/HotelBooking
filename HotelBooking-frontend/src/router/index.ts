@@ -23,9 +23,11 @@ const router = createRouter({
   routes: [
     {
       path: "/", name: "home", component: Home},
-        { path: "/identity", name: "identity", component: Identity },
+        { path: "/identity", name: "identity", component: Identity,
+      children: [
         { path: "/register", name: "register", component: Register },
         { path: "/login", name: "login", component: Login },
+      ]},
         { path: "/search", name: "searchrooms", component: SearchRoom, props: true},
         { path: "/booking", name: "bookingcreate", component: BookingCreate, props: true},
         { path: "/bookingadded", name: "bookingadded", component: BookingAdded, props: true},

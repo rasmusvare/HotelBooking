@@ -3,6 +3,7 @@ import type { IRoom } from "@/domain/IRoom";
 import { Options, Vue } from "vue-class-component";
 import { useRoomTypeStore } from "@/stores/RoomTypes";
 import { RoomService } from "@/services/RoomService";
+import RoomDeleteModal from "./RoomDeleteModal.vue";
 
 @Options({
   props: {
@@ -17,6 +18,9 @@ import { RoomService } from "@/services/RoomService";
       this.roomFormData.roomTypeId = this.room.roomTypeId;
       this.roomFormData.roomStatus = this.room.roomStatus;
     },
+  },
+  components: {
+    RoomDeleteModal,
   },
 })
 export default class RoomEdit extends Vue {
@@ -47,17 +51,17 @@ export default class RoomEdit extends Vue {
     }
   }
 
-  async handleDeleteRoom() {
-    const res = await this.roomService.remove(this.roomFormData.id!);
+  // async handleDeleteRoom() {
+  //   const res = await this.roomService.remove(this.roomFormData.id!);
 
-    if (res.status >= 300) {
-      this.errorMessage = res.errorMessage;
-      console.log(res);
-    } else {
-      this.errorMessage = null;
-      this.$router.push("/admin/" + this.hotelId + "/rooms");
-    }
-  }
+  //   if (res.status >= 300) {
+  //     this.errorMessage = res.errorMessage;
+  //     console.log(res);
+  //   } else {
+  //     this.errorMessage = null;
+  //     this.$router.push("/admin/" + this.hotelId + "/rooms");
+  //   }
+  // }
 }
 </script>
 
@@ -104,7 +108,6 @@ export default class RoomEdit extends Vue {
       >
         <option disabled value="">Select a Status</option>
         <option value="Available">Available</option>
-        <option value="AwaitingMaintenance">Awaiting Maintenance</option>
         <option value="Occupied">Occupied</option>
       </select>
       <label for="floatingInput">Status</label>
@@ -118,10 +121,12 @@ export default class RoomEdit extends Vue {
       </button>
       <button
         class="w-100 ms-3 btn btn-lg btn-danger"
-        @click="handleDeleteRoom()"
+        data-bs-toggle="modal"
+        :data-bs-target="'#deleteRoomModal-' + roomFormData.id"
       >
         Delete Room
       </button>
+      <RoomDeleteModal :roomId="roomFormData.id" :hotelId="hotelId" />
     </div>
   </div>
 </template>

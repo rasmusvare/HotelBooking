@@ -14,8 +14,7 @@ namespace WebApp.ApiControllers;
 [Route("api/v{version:apiVersion}/[controller]")]
 [ApiController]
 [ApiVersion("1.0")]
-[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-[AllowAnonymous]
+[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles="admin")]
 public class BookingController : ControllerBase
 {
     private readonly IAppBLL _bll;
@@ -34,6 +33,7 @@ public class BookingController : ControllerBase
     /// <param name="email">Email of the booking owner</param>
     /// <returns>List of bookings</returns>
     [HttpGet("search/{email}")]
+    [AllowAnonymous]
     [Produces("application/json")]
     [ProducesResponseType(typeof(IEnumerable<App.Public.DTO.v1.Booking>), StatusCodes.Status200OK)]
     [ProducesErrorResponseType(typeof(RestErrorResponse))]
@@ -54,7 +54,7 @@ public class BookingController : ControllerBase
     /// <param name="hotelId">Id of the hotel</param>
     /// <returns>List of bookings</returns>
     [HttpGet("{hotelId:guid}")]
-    [Authorize(Roles="admin")]
+    [AllowAnonymous]
     [Produces("application/json")]
     [ProducesResponseType(typeof(IEnumerable<App.Public.DTO.v1.Booking>), StatusCodes.Status200OK)]
     [ProducesErrorResponseType(typeof(RestErrorResponse))]
@@ -77,6 +77,7 @@ public class BookingController : ControllerBase
     /// <returns>Booking</returns>
     [HttpGet("details/{id:guid}")]
     [Produces("application/json")]
+    [AllowAnonymous]
     [ProducesResponseType(typeof(App.Public.DTO.v1.Booking), StatusCodes.Status200OK)]
     [ProducesErrorResponseType(typeof(RestErrorResponse))]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -118,6 +119,7 @@ public class BookingController : ControllerBase
     /// <param name="booking">Properties of the updated booking</param>
     /// <returns></returns>
     [HttpPut("{id:guid}")]
+    [AllowAnonymous]
     [Consumes("application/json")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesErrorResponseType(typeof(RestErrorResponse))]
@@ -166,8 +168,6 @@ public class BookingController : ControllerBase
             return NotFound(errorResponse);
         }
 
-        //TODO: Check dates, if not admin
-        
         if (!User.IsInRole("admin") && DateOnly.FromDateTime(DateTime.Now).AddDays(3) > DateOnly.Parse(bookingDb.DateFrom.ToString()) )
         {
             var errorResponse = new RestErrorResponse
@@ -242,6 +242,7 @@ public class BookingController : ControllerBase
     /// <param name="booking">Properties of the booking</param>
     /// <returns>Created booking</returns>
     [HttpPost]
+    [AllowAnonymous]
     [Produces("application/json")]
     [Consumes("application/json")]
     [ProducesResponseType(typeof(App.Public.DTO.v1.Booking), StatusCodes.Status200OK)]
@@ -306,6 +307,7 @@ public class BookingController : ControllerBase
     /// <param name="id">Id of the booking</param>
     /// <returns></returns>
     [HttpDelete("{id:guid}")]
+    [AllowAnonymous]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesErrorResponseType(typeof(RestErrorResponse))]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]

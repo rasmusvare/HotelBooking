@@ -33,6 +33,17 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid>
         {
             relationship.DeleteBehavior = DeleteBehavior.Restrict;
         }
+        
+        builder.Entity<Hotel>()
+            .HasMany(x => x.Rooms)
+            .WithOne(x => x.Hotel)
+            .OnDelete(DeleteBehavior.Cascade);
+        
+        builder.Entity<Hotel>()
+            .HasMany(x => x.RoomTypes)
+            .WithOne(x => x.Hotel)
+            .OnDelete(DeleteBehavior.Cascade);
+        
         builder.Entity<Booking>()
             .HasMany(x => x.Guests)
             .WithOne(x => x.Booking)

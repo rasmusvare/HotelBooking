@@ -5,10 +5,14 @@ import { useRoomTypeStore } from "@/stores/RoomTypes";
 import { useAmenityStore } from "@/stores/Amenities";
 import { Options, Vue } from "vue-class-component";
 import type { IAmenity } from "@/domain/IAmenity";
+import RoomTypeDeleteModal from "../RoomTypeDeleteModal.vue";
 
 @Options({
   props: {
     hotelId: String,
+  },
+  components: {
+    RoomTypeDeleteModal,
   },
 })
 export default class HotelRoomTypesEdit extends Vue {
@@ -103,16 +107,8 @@ export default class HotelRoomTypesEdit extends Vue {
   }
 
   async handleDeleteRoomType() {
-    const res = await this.roomTypeService.remove(this.selectedRoomTypeId!);
-
-    if (res.status >= 300) {
-      this.errorMessage = res.errorMessage;
-      console.log(res);
-    } else {
-      this.errorMessage = [];
-      this.roomTypeStore.deleteRoomType(this.selectedRoomTypeId!);
-      this.clearFormData();
-    }
+    this.clearFormData();
+    // }
   }
 
   clearFormData() {
@@ -221,9 +217,18 @@ export default class HotelRoomTypesEdit extends Vue {
           >
             Edit
           </button>
-          <button class="btn btn-danger ms-3" @click="handleDeleteRoomType()">
+          <button
+            class="btn btn-danger ms-3"
+            data-bs-toggle="modal"
+            :data-bs-target="'#deleteRoomTypeModal-' + selectedRoomTypeId"
+            @click="handleDeleteRoomType()"
+          >
             Delete
           </button>
+          <RoomTypeDeleteModal
+            :roomTypeId="selectedRoomTypeId"
+            :hotelId="hotelId"
+          />
         </template>
       </div>
     </div>
