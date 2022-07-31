@@ -121,29 +121,4 @@ public class BookingRepository : BaseEntityRepository<App.DAL.DTO.Booking, App.D
 
         return base.Update(booking);
     }
-
-    // public override Booking Add(Booking booking)
-    // {.
-    //     RepoDbContext.RoomTypes.FirstOrDefault(booking.RoomTypeId);
-    // }
-    //     
-    //     foreach (var guest in booking.Guests)
-    //     {
-    //         RepoDbContext.Guests.Add(_guestMapper.Map(guest)!);
-    //         RepoDbContext.SaveChangesAsync();
-    //     }
-    //     
-    //     Domain.Booking domainBooking = Mapper.Map(booking)!;
-    //     
-    //
-    //     domainRoomType.Amenities = domainRoomType.Amenities!.Select(e =>
-    //         {
-    //             var amentity = RepoDbContext.Amenities.FirstOrDefault(f => f == e);
-    //             return amentity;
-    //         })
-    //         .Where(e => e != null && e.HotelId == domainRoomType.HotelId)
-    //         .ToList()!;
-    //     
-    //     return Mapper.Map(RepoDbSet.Add(domainRoomType).Entity)!;
-    // }
 }
