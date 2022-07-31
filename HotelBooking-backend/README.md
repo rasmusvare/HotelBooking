@@ -1,6 +1,4 @@
-# Hotel BookingSystem
-
-
+# Hotel BookingSystem Backend
 
 ## Scaffolding
 
@@ -14,12 +12,6 @@ dotnet ef database --project App.DAL.EF --startup-project WebApp drop
 ~~~
 
 ### Controllers
-
-#### MVC razor based
-~~~bash
-cd WebApp
-
-~~~
 
 #### Web API
 ~~~bash

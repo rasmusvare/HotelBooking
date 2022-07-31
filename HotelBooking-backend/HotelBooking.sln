@@ -9,6 +9,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{20DC3505-D270-4532-B6F3-DB179BA82CFD}"
 	ProjectSection(SolutionItems) = preProject
 		README.md = README.md
+		..\README.md = ..\README.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Base", "Base", "{F49105FC-A3AA-483C-8091-B575E943EB17}"
