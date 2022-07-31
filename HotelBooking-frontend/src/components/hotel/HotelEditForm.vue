@@ -92,7 +92,7 @@ export default class HotelEditForm extends Vue {
   <div class="checkbox mb-3"></div>
   <div class="d-flex">
     <button
-      class="w-100 me-3 btn btn-lg btn-primary"
+      class="w-50 me-3 btn btn-lg btn-primary"
       @click="handleEditHotel()"
     >
       Edit Hotel

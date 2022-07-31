@@ -17,7 +17,7 @@ using WebApp;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-var connectionString = builder.Configuration.GetConnectionString("PostgresDockerConnection");
+var connectionString = builder.Configuration.GetConnectionString("PostgresConnectionCleverCloud");
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
     options.UseNpgsql(connectionString);
@@ -32,7 +32,6 @@ builder.Services.AddAutoMapper(
     typeof(App.BLL.AutoMapperConfig),
     typeof(App.Public.DTO.v1.MapperConfig.AutoMapperConfig)
 );
-
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 

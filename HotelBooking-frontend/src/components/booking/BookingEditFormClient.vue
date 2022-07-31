@@ -5,6 +5,7 @@ import { BookingService } from "@/services/BookingService";
 import { RoomTypeService } from "@/services/RoomTypeService";
 import { useRoomTypeStore } from "@/stores/RoomTypes";
 import { Options, Vue } from "vue-class-component";
+import GuestEditModal from "../GuestEditModal.vue";
 
 @Options({
   props: {
@@ -20,6 +21,9 @@ import { Options, Vue } from "vue-class-component";
       this.hotelbookingDataFormData.address = this.hotel.address;
       this.bookingData.telephoneNumber = this.hotel.telephoneNumber;
     },
+  },
+  components: {
+    GuestEditModal,
   },
 })
 export default class BookingEditFormClient extends Vue {
@@ -113,7 +117,7 @@ export default class BookingEditFormClient extends Vue {
         </thead>
         <tbody>
           <template v-for="each in bookingData.guests">
-            <tr>
+            <tr v-if="each.isBookingOwner == false">
               <td>
                 {{ each.firstName }}
               </td>
@@ -129,7 +133,17 @@ export default class BookingEditFormClient extends Vue {
               <td>
                 {{ each.phoneNumber }}
               </td>
-              <td>EDIT</td>
+              <td>
+                <button
+                  :disabled="editDisabled"
+                  class="btn btn-primary btn-sm"
+                  data-bs-toggle="modal"
+                  :data-bs-target="'#editGuestModal-' + each.id"
+                >
+                  Edit
+                </button>
+                <GuestEditModal :guests="bookingData.guests" :guest="each" />
+              </td>
             </tr>
           </template>
         </tbody>

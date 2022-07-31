@@ -125,8 +125,8 @@ public static class AppDataHelper
             var roomTypes =
                 new (Guid hotelId, string name, string description, int count,int noOfBeds, decimal pricePerNight)[]
                 {
-                    (hotel.Id, "Standard room", "Standard twin room", 4, 2, 100),
-                    (hotel.Id, "Deluxe room", "Presidential suite", 1,3, 12000),
+                    (hotel.Id, "Standard room", "Standard twin room", 0, 2, 100),
+                    (hotel.Id, "Deluxe room", "Presidential suite", 0, 3, 12000),
                 };
 
             foreach (var each in roomTypes)

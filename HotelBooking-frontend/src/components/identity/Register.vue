@@ -1,3 +1,52 @@
+<script lang="ts">
+import router from "@/router";
+import { IdentityService } from "@/services/IdentityService";
+import { useIdentityStore } from "@/stores/identity";
+import { Vue } from "vue-class-component";
+
+export default class Register extends Vue {
+  identityService = new IdentityService();
+  identityStore = useIdentityStore();
+
+  email = "";
+  password = "";
+  firstname = "";
+  lastname = "";
+
+  errorMessage: Array<string> | null | undefined = null;
+
+  async handleRegisterSubmit() {
+
+    if (this.email.length > 0 && this.password.length > 0) {
+      const res = await this.identityService.register(this.email, this.password, this.firstname, this.lastname);
+
+      if (res.status >= 300) {
+        this.errorMessage = res.errorMessage;
+        console.log(res);
+      } else {
+        this.errorMessage = [];
+        this.identityStore.$state.jwt = res.data;
+        await router.push("/admin");
+      }
+    }
+    // await IdentityService.register(this.email,this.password,
+    //   this.firstname,
+    //   this.lastname)
+    //   .then((res) => {
+    //       if (!res.success) {
+    //         console.log(res)
+    //         return;
+    //       }
+    //       this.$router.push({ name: 'home'});
+    //     }
+    //   ).catch((res) => {
+    //       console.log(res);
+    //     }
+    //   );
+  }
+}
+</script>
+
 <template>
   <div class="form-identity form-register">
     <h1 class="h3 mb-3 fw-normal">Register</h1>
@@ -43,33 +92,3 @@
     </button>
   </div>
 </template>
-
-<script lang="ts">
-// import IdentityService from "@/services/IdentityService";
-import { Vue } from "vue-class-component";
-export default class Register extends Vue {
-  email = "";
-  password = "";
-  firstname = "";
-  lastname = "";
-
-  async handleRegisterSubmit() {
-    // await IdentityService.register(this.email,this.password,
-    //   this.firstname,
-    //   this.lastname)
-    //   .then((res) => {
-    //       if (!res.success) {
-    //         console.log(res)
-    //         return;
-    //       }
-    //       this.$router.push({ name: 'home'});
-    //     }
-    //   ).catch((res) => {
-    //       console.log(res);
-    //     }
-    //   );
-  }
-}
-</script>
-
-<style></style>

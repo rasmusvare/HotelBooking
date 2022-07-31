@@ -5,7 +5,7 @@ namespace App.DAL.EF;
 
 public class AppDbContextFactory
 {
-    public class BloggingContextFactory : IDesignTimeDbContextFactory<AppDbContext>
+    public class HotelBookingContextFactory : IDesignTimeDbContextFactory<AppDbContext>
     {
         public AppDbContext CreateDbContext(string[] args)
         {
