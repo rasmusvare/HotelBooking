@@ -1,8 +1,6 @@
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
-
 import type { IRoom } from "@/domain/IRoom";
-
 import { useRoomTypeStore } from "@/stores/RoomTypes";
 import RoomCreate from "@/components/room/RoomCreate.vue";
 import { RoomTypeService } from "@/services/RoomTypeService";

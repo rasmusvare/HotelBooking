@@ -3,6 +3,7 @@ import type { IGuest } from "@/domain/IGuest";
 import { useSearchResultsStore } from "@/stores/SearchResults";
 import { Options, Vue } from "vue-class-component";
 import GuestAddModal from "./GuestAddModal.vue";
+import GuestEditModal from "./GuestEditModal.vue";
 
 @Options({
   props: {
@@ -10,6 +11,7 @@ import GuestAddModal from "./GuestAddModal.vue";
   },
   components: {
     GuestAddModal,
+    GuestEditModal,
   },
 })
 export default class GuestsList extends Vue {
@@ -54,6 +56,7 @@ export default class GuestsList extends Vue {
           <th scope="col">Last name</th>
           <th scope="col">Id Code</th>
           <th scope="col">Email</th>
+          <th scope="col">Telephone</th>
           <th scope="col"></th>
         </tr>
       </thead>
@@ -71,6 +74,19 @@ export default class GuestsList extends Vue {
             </td>
             <td>
               <span> {{ each.email }}</span>
+            </td>
+            <td>
+              <span> {{ each.phoneNumber }}</span>
+            </td>
+            <td>
+              <button
+                class="btn btn-primary btn-sm"
+                data-bs-toggle="modal"
+                :data-bs-target="'#editGuestModal-' + each.id"
+              >
+                Edit
+              </button>
+              <GuestEditModal :guests="guests" :guest="each" />
             </td>
             <!-- <td style="width: 10%">
               <RouterLink 

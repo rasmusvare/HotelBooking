@@ -1,17 +1,14 @@
 <script lang="ts">
 import type { IBooking } from "@/domain/IBooking";
 import type { IGuest } from "@/domain/IGuest";
-import type { IRoomType } from "@/domain/IRoomType";
 import { BookingService } from "@/services/BookingService";
 import { RoomTypeService } from "@/services/RoomTypeService";
 import { useRoomTypeStore } from "@/stores/RoomTypes";
 import { Options, Vue } from "vue-class-component";
-import GuestAddModal from "../GuestAddModal.vue";
-import GuestEditModal from "../GuestEditModal.vue";
 
 @Options({
   props: {
-    bookingId: String,
+    editDisabled: Boolean,
     bookingData: Object as unknown as IBooking,
   },
   watch: {
@@ -24,23 +21,16 @@ import GuestEditModal from "../GuestEditModal.vue";
       this.bookingData.telephoneNumber = this.hotel.telephoneNumber;
     },
   },
-  components: {
-    GuestAddModal,
-    GuestEditModal,
-  },
 })
-export default class BookingEditForm extends Vue {
+export default class BookingEditFormClient extends Vue {
   roomTypeService = new RoomTypeService();
   roomTypeStore = useRoomTypeStore();
 
   bookingService = new BookingService();
-  bookingId!: string;
-
-  hotelId!: string;
-
-  roomTypes: IRoomType[] = [];
-
   bookingData!: IBooking;
+
+  editDisabled!: boolean;
+
   bookingHolder: IGuest = {
     firstName: "",
     lastName: "",
@@ -49,10 +39,6 @@ export default class BookingEditForm extends Vue {
     phoneNumber: "",
     isBookingOwner: true,
   };
-
-  handleSelectRoomType(roomType: IRoomType) {
-    this.bookingData.roomTypeId = roomType.id!;
-  }
 
   async beforeUpdate() {
     this.bookingHolder = this.bookingData.guests.find(
@@ -68,6 +54,7 @@ export default class BookingEditForm extends Vue {
       <h4>Contact Information</h4>
       <div class="form-floating" v-if="bookingHolder != undefined">
         <input
+          :disabled="editDisabled"
           v-model="bookingHolder.firstName"
           type="text"
           class="form-control form-control-top"
@@ -76,6 +63,7 @@ export default class BookingEditForm extends Vue {
       </div>
       <div class="form-floating">
         <input
+          :disabled="editDisabled"
           v-model="bookingHolder.lastName"
           type="text"
           class="form-control form-control-middle"
@@ -84,6 +72,7 @@ export default class BookingEditForm extends Vue {
       </div>
       <div class="form-floating">
         <input
+          :disabled="editDisabled"
           v-model="bookingHolder.idCode"
           type="text"
           class="form-control form-control-middle"
@@ -92,6 +81,7 @@ export default class BookingEditForm extends Vue {
       </div>
       <div class="form-floating">
         <input
+          :disabled="editDisabled"
           v-model="bookingHolder.email"
           type="text"
           class="form-control form-control-middle"
@@ -100,6 +90,7 @@ export default class BookingEditForm extends Vue {
       </div>
       <div class="form-floating">
         <input
+          :disabled="editDisabled"
           v-model="bookingHolder.phoneNumber"
           type="text"
           class="form-control form-control-bottom"
@@ -107,18 +98,8 @@ export default class BookingEditForm extends Vue {
         <label for="floatingInput">Phone Number</label>
       </div>
     </div>
-    <h4>Guests</h4>
-    <div class="d-flex">
-      <button
-        class="btn btn-primary btn-sm mt-1 mb-3"
-        data-bs-toggle="modal"
-        :data-bs-target="'#addGuestModal'"
-      >
-        Add guest
-      </button>
-      <GuestAddModal :guests="bookingData.guests" />
-    </div>
     <div v-if="bookingData.guests.length > 1">
+      <h4>Guests</h4>
       <table class="table">
         <thead>
           <tr>
@@ -132,7 +113,7 @@ export default class BookingEditForm extends Vue {
         </thead>
         <tbody>
           <template v-for="each in bookingData.guests">
-            <tr v-if="each.isBookingOwner == false">
+            <tr>
               <td>
                 {{ each.firstName }}
               </td>
@@ -148,56 +129,17 @@ export default class BookingEditForm extends Vue {
               <td>
                 {{ each.phoneNumber }}
               </td>
-              <td>
-                <button
-                  class="btn btn-primary btn-sm"
-                  data-bs-toggle="modal"
-                  :data-bs-target="'#editGuestModal-' + each.id"
-                >
-                  Edit
-                </button>
-                <GuestEditModal :guests="bookingData.guests" :guest="each" />
-              </td>
+              <td>EDIT</td>
             </tr>
           </template>
         </tbody>
       </table>
     </div>
 
-    <h4>Room Type</h4>
-    <div class="mb-3">
-      <div class="list-group overflow-auto" style="height: 200px">
-        <template
-          v-bind:key="roomType.id"
-          v-for="roomType in roomTypeStore.data"
-        >
-          <a
-            href="#"
-            class="list-group-item list-group-item-action"
-            :class="{ active: bookingData.roomTypeId == roomType.id }"
-            @click="handleSelectRoomType(roomType)"
-          >
-            <div class="d-flex w-100 justify-content-between">
-              <h5 class="mb-1">{{ roomType.name }}</h5>
-              <small>
-                {{ roomType.numberOfBeds }}
-                <object
-                  class="me-2"
-                  data="https://www.svgrepo.com/show/17785/bed.svg"
-                  type="image/svg+xml"
-                  width="12"
-                  height="12"
-                ></object>
-              </small>
-            </div>
-            <p class="mb-1">{{ roomType.description }}</p>
-          </a>
-        </template>
-      </div>
-    </div>
     <h4>Duration</h4>
     <div class="form-floating">
       <input
+        :disabled="editDisabled"
         v-model="bookingData.dateFrom"
         type="date"
         class="form-control form-control-top"
@@ -206,6 +148,7 @@ export default class BookingEditForm extends Vue {
     </div>
     <div class="form-floating">
       <input
+        :disabled="editDisabled"
         v-model="bookingData!.dateTo"
         type="date"
         class="form-control form-control-bottom"

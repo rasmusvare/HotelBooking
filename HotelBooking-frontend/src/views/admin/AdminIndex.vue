@@ -1,3 +1,45 @@
+<script lang="ts">
+import { Options, Vue } from "vue-class-component";
+import { useHotelStore } from "@/stores/Hotels";
+import { HotelService } from "@/services/HotelService";
+import HotelDropdown from "@/components/HotelDropdown.vue";
+import { useIdentityStore } from "@/stores/identity";
+
+@Options({
+  components: {
+    HotelDropdown,
+  },
+})
+export default class AdminIndex extends Vue {
+  hotelStore = useHotelStore();
+  hotelService = new HotelService();
+  identityStore = useIdentityStore();
+  name = "user";
+  hotelId = 0;
+
+  async mounted(): Promise<void> {
+    if (this.identityStore.jwt != null) {
+      this.name = `${this.identityStore.jwt?.firstName} ${this.identityStore.jwt?.lastName}`;
+    }
+    const hotels = await this.hotelService.getAll();
+
+    this.hotelStore.$state.data = hotels;
+    this.hotelStore.$state.current = hotels[0];
+  }
+
+  beforeCreate() {
+    if (this.identityStore.$state.jwt == undefined) {
+      window.location.href = "/identity";
+    }
+  }
+
+  handleLogout() {
+    this.identityStore.$state.jwt = undefined;
+    window.location.href = "/";
+  }
+}
+</script>
+
 <template>
   <div
     class="d-flex flex-column flex-shrink-0 p-3 bg-light"
@@ -21,7 +63,10 @@
       <li class="nav-item" v-if="hotelStore.$state.current != undefined">
         <RouterLink
           class="px-2 nav-link link-dark d-flex align-items-center"
-          :to="{ name: 'roomindex', params: { hotelId: hotelStore.$state.current.id } }"
+          :to="{
+            name: 'roomindex',
+            params: { hotelId: hotelStore.$state.current.id },
+          }"
           :class="{ active: $route.name === 'roomindex' }"
         >
           <object
@@ -37,7 +82,10 @@
       <li class="nav-item" v-if="hotelStore.$state.current != undefined">
         <RouterLink
           class="px-2 nav-link link-dark d-flex align-items-center"
-          :to="{ name: 'hotelbookings', params: { hotelId: hotelStore.$state.current.id } }"
+          :to="{
+            name: 'hotelbookings',
+            params: { hotelId: hotelStore.$state.current.id },
+          }"
           :class="{ active: $route.name === 'hotelbookings' }"
         >
           <object
@@ -54,8 +102,11 @@
     <RouterLink
       class="h6 mb-3 d-flex align-items-center link-dark text-decoration-none"
       v-if="hotelStore.$state.current != undefined"
-      :to="{ name: 'searchrooms', params: { hotelId: hotelStore.$state.current.id } }"
-      :class="{ active: $route.name == 'searchrooms' }"
+      :to="{
+        name: 'home',
+        params: { hotelId: hotelStore.$state.current.id },
+      }"
+      :class="{ active: $route.name == 'home' }"
     >
       <object
         class="me-4"
@@ -64,15 +115,21 @@
         width="16"
         height="16"
       ></object>
-      Public booking form
+      Public room search form
     </RouterLink>
- <div class="dropup">
-        <a href="#" class="d-flex align-items-center link-dark text-decoration-none dropdown-toggle" id="dropdownHotel" data-bs-toggle="dropdown" aria-expanded="false">
-            <h5>Hotels</h5>
-        </a>
-        <HotelDropdown />
+    <div class="dropup">
+      <a
+        href="#"
+        class="d-flex align-items-center link-dark text-decoration-none dropdown-toggle"
+        id="dropdownHotel"
+        data-bs-toggle="dropdown"
+        aria-expanded="false"
+      >
+        <h5>Hotels</h5>
+      </a>
+      <HotelDropdown />
     </div>
-    
+
     <hr />
     <div>
       <span
@@ -100,53 +157,6 @@
     <router-view :key="$route.path"></router-view>
   </div>
 </template>
-
-<script lang="ts">
-import { Options, Vue } from "vue-class-component";
-import { useHotelStore } from "@/stores/Hotels";
-import { HotelService } from "@/services/HotelService";
-import HotelDropdown from "@/components/HotelDropdown.vue";
-import { IdentityService } from "@/services/IdentityService";
-import { useIdentityStore } from "@/stores/identity";
-
-@Options({
-  components: {
-    HotelDropdown
-  },
-})
-
-export default class AdminIndex extends Vue {
-  hotelStore = useHotelStore();
-  hotelService = new HotelService();
-identityStore = useIdentityStore();
-name = "user"
-  hotelId = 0;
-
-
-
-  async mounted(): Promise<void> {
-    if (this.identityStore.jwt != null){
-  this.name = `${this.identityStore.jwt?.firstName} ${this.identityStore.jwt?.lastName}}`
-
-}
-    const hotels = await this.hotelService.getAll();
-
-    this.hotelStore.$state.data = hotels;
-    this.hotelStore.$state.current = hotels[0];
-  }
-
-  beforeCreate() {
-    // if (!IdentityService.loggedIn()) {
-    //   window.location.href = '/';
-    // }
-  }
-
-  handleLogout() {
-    window.location.href = "/";
-    // IdentityService.logout();
-  }
-}
-</script>
 
 <style>
 #app,

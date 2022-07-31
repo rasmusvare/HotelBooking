@@ -1,11 +1,8 @@
 using App.Contracts.DAL.Repositories;
-using App.DAL.EF.Mappers;
-using App.Domain;
-using AutoMapper;
+using App.DAL.DTO;
 using Base.Contracts.Base;
 using Base.DAL.EF;
 using Microsoft.EntityFrameworkCore;
-using Booking = App.DAL.DTO.Booking;
 
 namespace App.DAL.EF.Repositories;
 
@@ -20,8 +17,6 @@ public class BookingRepository : BaseEntityRepository<App.DAL.DTO.Booking, App.D
     {
         var query = CreateQuery(noTracking);
 
-        // query = query.Where(a => a.AppUserId == userId);
-
         return (await query.ToListAsync())
             .Select(x => Mapper.Map(x)!);
     }
@@ -32,7 +27,8 @@ public class BookingRepository : BaseEntityRepository<App.DAL.DTO.Booking, App.D
 
         query = query
             .Include(b => b.Guests)
-            .Where(b => b.HotelId == hotelId);
+            .Where(b => b.HotelId == hotelId)
+            .OrderByDescending(b => b.DateFrom);
 
         return (await query.ToListAsync())
             .Select(x => Mapper.Map(x)!);
@@ -41,25 +37,25 @@ public class BookingRepository : BaseEntityRepository<App.DAL.DTO.Booking, App.D
     public async Task<IEnumerable<Booking>> GetBookingsForRoomType(Booking booking, bool noTracking = true)
     {
         var query = CreateQuery(noTracking);
-        
+
         var bookings = await query
-            .Where(b => b.RoomTypeId == booking.RoomTypeId && b.DateFrom >= booking.DateFrom &&
-                        b.DateTo <= booking.DateTo)
+            .Where(b => b.RoomTypeId == booking.RoomTypeId
+                        && (b.DateFrom > booking.DateFrom &&
+                            b.DateFrom < booking.DateTo
+                            || b.DateTo > booking.DateFrom &&
+                            b.DateTo < booking.DateTo
+                            || b.DateFrom <= booking.DateFrom
+                            && b.DateTo >= booking.DateTo
+                        )
+            )
             .ToListAsync();
 
-        return bookings.Select(x=>Mapper.Map(x)!);
+        return bookings.Select(x => Mapper.Map(x)!);
     }
 
     public async Task<IEnumerable<Booking>> SearchBookingsByEmail(string email, bool noTracking = true)
     {
         var query = CreateQuery(noTracking);
-
-        // var bookings = await query
-        //     .Include(b => b.Guests)
-        //     .SelectMany(b=>b.Guests!
-        //         .Where(g=>g.Email==email && g.IsBookingOwner))
-        //     .Select(g=>g.Booking!)
-        //     .ToListAsync();
 
         var bookings = await query
             .Include(b => b.Guests)
@@ -78,7 +74,6 @@ public class BookingRepository : BaseEntityRepository<App.DAL.DTO.Booking, App.D
             .FirstOrDefaultAsync(b => b.Id == id);
 
         return Mapper.Map(booking);
-        // return base.FirstOrDefaultAsync(id, noTracking);
     }
 
 
@@ -92,6 +87,26 @@ public class BookingRepository : BaseEntityRepository<App.DAL.DTO.Booking, App.D
         }
 
         return roomType.PricePerNight;
+    }
+
+    public override Booking Update(Booking booking)
+    {
+        var query = CreateQuery();
+
+        var bookingDb = FirstOrDefaultAsync(booking.Id).Result!;
+
+        var guestsToDelete = bookingDb.Guests!.Where(g => !booking.Guests!.Select(x => x.Id).ToList().Contains(g.Id))
+            .ToList();
+
+        foreach (var guest in guestsToDelete)
+        {
+            var guestDb = RepoDbContext.Guests.First(g => g.Id == guest.Id);
+            RepoDbContext.Guests.Remove(guestDb);
+        }
+
+        RepoDbContext.SaveChanges();
+
+        return base.Update(booking);
     }
 
     // public override Booking Add(Booking booking)

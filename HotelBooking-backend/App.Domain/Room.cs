@@ -13,10 +13,6 @@ public class Room : DomainEntityId
     public RoomType? RoomType { get; set; }
 
     public string RoomNumber { get; set; } = default!;
-    // public int NumberOfBeds { get; set; }
-    // public decimal PricePerNight { get; set; }
-    // public string Description { get; set; } = default!;
 
     public ERoomStatus RoomStatus { get; set; }
-    public ICollection<Stay>? Stays { get; set; }
 }

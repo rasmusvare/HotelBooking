@@ -8,6 +8,8 @@ public interface IRoomTypeService: IEntityService<App.BLL.DTO.RoomType>, IRoomTy
 {
    Task CountRooms(RoomType roomType);
    
-   Task<IEnumerable<RoomType>> SearchAvailableRooms(Guid hotelId, string startDate, string endDate, int noOfGuests,
+   Task<IEnumerable<RoomType>> SearchAvailableRooms(SearchProperties searchProperties,
       bool noTracking = true);
+   List<string> ValidateSearch(SearchProperties searchProperties);
+
 }

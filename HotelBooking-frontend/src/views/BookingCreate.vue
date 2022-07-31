@@ -1,4 +1,5 @@
 <script lang="ts">
+import { Options, Vue } from "vue-class-component";
 import type { IBooking } from "@/domain/IBooking";
 import type { IGuest } from "@/domain/IGuest";
 import type { IRoomType } from "@/domain/IRoomType";
@@ -6,21 +7,11 @@ import { BookingService } from "@/services/BookingService";
 import { RoomTypeService } from "@/services/RoomTypeService";
 import { useHotelStore } from "@/stores/Hotels";
 import { useSearchResultsStore } from "@/stores/SearchResults";
-
-import { Options, Vue } from "vue-class-component";
 import GuestsList from "../components/GuestsList.vue";
 
 @Options({
-  // props: (route: any) => ({
-  //   hotelId: String,
-  //   ...route.params,
-  // }),
   props: {
-    // hotelId: String,
-    roomTypez: String,
-    // dateFrom: Date,
-    // DateTo: Date,
-    // roomType2: ["room"]
+    roomTypeJSON: String,
   },
 
   components: {
@@ -30,7 +21,7 @@ import GuestsList from "../components/GuestsList.vue";
 export default class BookingCreate extends Vue {
   searchStore = useSearchResultsStore();
   hotelStore = useHotelStore();
-  roomTypez!: string;
+  roomTypeJSON!: string;
 
   hotelId!: string;
   roomTypeId!: string;
@@ -69,9 +60,12 @@ export default class BookingCreate extends Vue {
   bookingService = new BookingService();
 
   mounted() {
-    console.log(this.roomTypez);
-    console.log(JSON.parse(this.roomTypez));
-    this.roomType = JSON.parse(this.roomTypez) as IRoomType;
+    if (this.roomTypeJSON == undefined || "") {
+      this.$router.push({
+        name: "home",
+      });
+    }
+    this.roomType = JSON.parse(this.roomTypeJSON) as IRoomType;
 
     this.bookingData.dateFrom = this.searchStore.startdate;
     this.bookingData.dateTo = this.searchStore.enddate;

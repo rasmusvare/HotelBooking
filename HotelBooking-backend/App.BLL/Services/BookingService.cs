@@ -1,3 +1,4 @@
+using System.Threading.Channels;
 using App.BLL.DTO;
 using App.Contracts.BLL.Services;
 using App.Contracts.DAL.Repositories;
@@ -64,11 +65,28 @@ public class BookingService : BaseEntityService<App.BLL.DTO.Booking, App.DAL.DTO
     {
         var validationErrors = new List<string>();
 
+        var bookingDb = await Repository.FirstOrDefaultAsync(booking.Id);
         var roomTypeBookings = (await Repository.GetBookingsForRoomType(Mapper.Map(booking)!)).ToList();
+        var bookingsCount = roomTypeBookings.Count;
 
-        if (roomTypeBookings.Count >= roomType.Count)
+        if (bookingDb != null && roomTypeBookings.Any(b => b.Id == bookingDb.Id))
         {
-            validationErrors.Add("No rooms available for the selected time period");
+            bookingsCount--;
+        }
+        
+        if (booking.DateFrom < DateOnly.FromDateTime(DateTime.Now))
+        {
+            validationErrors.Add("Cannot add or change this booking as the booking start time is smaller than the current date");
+        }
+
+        if (booking.DateFrom > booking.DateTo)
+        {
+            validationErrors.Add("Booking start date cannot be bigger than booking end date");
+        }
+        
+        if (booking.DateFrom == booking.DateTo)
+        {
+            validationErrors.Add("Booking start and end date cannot be on the same day");
         }
 
         if (booking.Guests?.Count == 0)
@@ -81,9 +99,14 @@ public class BookingService : BaseEntityService<App.BLL.DTO.Booking, App.DAL.DTO
             validationErrors.Add("Too many guests for the selected room type");
         }
 
-
+        if (bookingsCount >= roomType.Count)
+        {
+            validationErrors.Add("No rooms available for the selected time period");
+        }
+        
         return validationErrors;
 
+        //TODO: VALIDATE GUEST EMAIL, PHONE, ETC...
         //TODO!
     }
 
@@ -91,13 +114,11 @@ public class BookingService : BaseEntityService<App.BLL.DTO.Booking, App.DAL.DTO
     public override Booking Add(Booking booking)
     {
         var numberOfNights = booking.DateTo.DayNumber - booking.DateFrom.DayNumber;
-        //
-
         booking.TotalPrice = numberOfNights * Repository.GetPricePerNight(booking.RoomTypeId).Result;
-        // booking.TotalPrice = numberOfNights
         
         return base.Add(booking);
     }
+    
 
     private Guest FindBookingHolder(IEnumerable<Guest> guests)
     {

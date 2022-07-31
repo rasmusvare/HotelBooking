@@ -11,5 +11,4 @@ public interface IAppBLL : IBLL
     IHotelService Hotels { get; }
     IRoomService Rooms { get; }
     IRoomTypeService RoomTypes { get; }
-    IStayService Stays { get; }
 }

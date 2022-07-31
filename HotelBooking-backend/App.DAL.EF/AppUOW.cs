@@ -46,9 +46,4 @@ public class AppUOW : BaseUOW<AppDbContext>, IAppUnitOfWork
 
     public virtual IRoomTypeRepository RoomTypes =>
         _roomTypes ??= new RoomTypeRepository(UOWDbContext, new RoomTypeMapper(_mapper));
-
-    private IStayRepository? _stays;
-
-    public virtual IStayRepository Stays =>
-        _stays ??= new StayRepository(UOWDbContext, new StayMapper(_mapper));
 }

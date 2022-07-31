@@ -14,7 +14,7 @@ namespace WebApp.ApiControllers;
 [Route("api/v{version:apiVersion}/[controller]")]
 [ApiController]
 [ApiVersion("1.0")]
-[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles="admin")]
 public class AmenityController : ControllerBase
 {
     private readonly IAppBLL _bll;
@@ -27,22 +27,38 @@ public class AmenityController : ControllerBase
     }
 
     // GET: api/Amenity
-    [HttpGet("{hotelId}")]
-    [AllowAnonymous]
+    /// <summary>
+    /// Returns all amenities of the specified hotel
+    /// </summary>
+    /// <param name="hotelId">Id of the hotel</param>
+    /// <returns>List of amenities</returns>
+    [HttpGet("{hotelId:guid}")]
+    [Produces("application/json")]
+    [ProducesResponseType(typeof(IEnumerable<App.Public.DTO.v1.Amenity>), StatusCodes.Status200OK)]
+    [ProducesErrorResponseType(typeof(RestErrorResponse))]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<IEnumerable<App.Public.DTO.v1.Amenity>>> GetAmenities(Guid hotelId)
     {
         var hotelAmenities = (await _bll.Amenities.GetAllAsync(hotelId))
-            .Select(x => _amenityMapper.Map(x))
+            .Select(x => _amenityMapper.Map(x)!)
             .ToList();
 
-        return hotelAmenities;
-
+        return Ok(hotelAmenities);
     }
 
-    // GET: api/Amenity/5
-    [HttpGet("details/{id}")]
+    // GET: api/Amenity/details/5
+    /// <summary>
+    /// Returns the details of the specified amenity
+    /// </summary>
+    /// <param name="id">Id of the amenity</param>
+    /// <returns>Amenity details</returns>
+    [HttpGet("details/{id:guid}")]
     [AllowAnonymous]
-
+    [Produces("application/json")]
+    [ProducesResponseType(typeof(App.Public.DTO.v1.Amenity), StatusCodes.Status200OK)]
+    [ProducesErrorResponseType(typeof(RestErrorResponse))]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<Amenity>> GetAmenity(Guid id)
     {
         var amenity = await _bll.Amenities.FirstOrDefaultAsync(id);
@@ -57,9 +73,20 @@ public class AmenityController : ControllerBase
 
     // PUT: api/Amenity/5
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-    [HttpPut("{id}")]
-    [AllowAnonymous]
-
+    
+    /// <summary>
+    /// Updates the properties of the specified amenity
+    /// </summary>
+    /// <param name="id">Id of the amenity</param>
+    /// <param name="amenity">Updated amenity properties</param>
+    /// <returns></returns>
+    [HttpPut("{id:guid}")]
+    [Consumes("application/json")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesErrorResponseType(typeof(RestErrorResponse))]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> PutAmenity(Guid id, Amenity amenity)
     {
         if (id != amenity.Id)
@@ -108,8 +135,17 @@ public class AmenityController : ControllerBase
 
     // POST: api/Amenity
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+    /// <summary>
+    /// Creates a new amenity with the properties specified
+    /// </summary>
+    /// <param name="amenity">Properties of the amenity</param>
+    /// <returns>Created amenity</returns>
     [HttpPost]
-    [AllowAnonymous]
+    [Produces("application/json")]
+    [Consumes("application/json")]
+    [ProducesResponseType(typeof(App.Public.DTO.v1.Amenity), StatusCodes.Status200OK)]
+    [ProducesErrorResponseType(typeof(RestErrorResponse))]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<Amenity>> PostAmenity(Amenity amenity)
     {
         var bllEntity = _amenityMapper.Map(amenity)!;
@@ -122,7 +158,16 @@ public class AmenityController : ControllerBase
     }
 
     // DELETE: api/Amenity/5
-    [HttpDelete("{id}")]
+    /// <summary>
+    /// Deletes the specified amenity
+    /// </summary>
+    /// <param name="id">Id of the amenity</param>
+    /// <returns></returns>
+    [HttpDelete("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesErrorResponseType(typeof(RestErrorResponse))]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteAmenity(Guid id)
     {
         var amenity = await _bll.Amenities.FirstOrDefaultAsync(id);
@@ -136,5 +181,4 @@ public class AmenityController : ControllerBase
 
         return NoContent();
     }
-
 }

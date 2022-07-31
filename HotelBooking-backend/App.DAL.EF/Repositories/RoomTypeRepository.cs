@@ -29,39 +29,31 @@ public class RoomTypeRepository : BaseEntityRepository<App.DAL.DTO.RoomType, App
     public async Task<IEnumerable<RoomType>> SearchAvailableRooms(Guid hotelId, DateOnly startDate, DateOnly endDate,
         int noOfGuests, bool noTracking = true)
     {
-        var query = CreateQuery(noTracking);
-
         // var startDateComponents = startDate.Split("-").Select(d=>int.Parse(d)).ToList();
         // var start = new DateOnly(startDateComponents[0], startDateComponents[1], startDateComponents[2]);
         //
         // var endDateComponents = endDate.Split("-").Select(d=>int.Parse(d)).ToList();
         // var end = new DateOnly(endDateComponents[0], endDateComponents[1], endDateComponents[2]);
 
-        // var test = CreateQuery(noTracking);
-        //
-        // test = test
-        //     .Include(r => r.Amenities)
-        //     .Include(r => r.Bookings!.Where(b =>
-        //         b.DateFrom >= startDate && b.DateTo <= endDate
-        //         
-        //         ));
-        //
-        // foreach (var each in test.ToList())
-        // {
-        //     Console.WriteLine(each.Bookings?.Count);
-        // }
+        var query = CreateQuery(noTracking);
 
-        query = query
+        var availableRoomTypes = await query
+            .Where(r => r.HotelId == hotelId)
             .Include(r => r.Amenities)
-            .Include(r => r.Bookings)
-            // !.Where(b=>
-            // b.DateFrom>=startDate && b.DateTo<=endDate ||
-            // b.DateFrom>= endDate 
-            // || b.DateTo<=startDate
-            // ))
-            .Where(r => r.HotelId == hotelId && r.NumberOfBeds >= noOfGuests);
+            .Include(r => r.Bookings!.Where(b =>
+                b.DateFrom > startDate &&
+                b.DateFrom < endDate
+                || b.DateTo > startDate &&
+                b.DateTo < endDate
+                || b.DateFrom <= startDate
+                && b.DateTo >= endDate
+            ))
+            .ToListAsync();
 
-        return (await query.ToListAsync())
+
+        return availableRoomTypes.Where(r =>
+                r.HotelId == hotelId
+                && r.Bookings?.Count < r.Count && r.NumberOfBeds >= noOfGuests)
             .Select(x => Mapper.Map(x)!);
     }
 
@@ -71,7 +63,7 @@ public class RoomTypeRepository : BaseEntityRepository<App.DAL.DTO.RoomType, App
 
         var roomType = await query
             .Include(r => r.Rooms)
-            .Include(r=>r.Amenities)
+            .Include(r => r.Amenities)
             .FirstOrDefaultAsync(r => r.Id == roomTypeId);
 
         return Mapper.Map(roomType)!;

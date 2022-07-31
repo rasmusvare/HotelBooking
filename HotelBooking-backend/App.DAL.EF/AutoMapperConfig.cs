@@ -12,7 +12,6 @@ public class AutoMapperConfig : Profile
         CreateMap<DAL.DTO.Hotel, Domain.Hotel>().ReverseMap();
         CreateMap<DAL.DTO.Room, Domain.Room>().ReverseMap();
         CreateMap<DAL.DTO.RoomType, Domain.RoomType>().ReverseMap();
-        CreateMap<DAL.DTO.Stay, Domain.Stay>().ReverseMap();
         CreateMap<DAL.DTO.Identity.AppUser, Domain.Identity.AppUser>().ReverseMap();
     }
     

@@ -3,11 +3,10 @@
 import { useIdentityStore } from "@/stores/identity";
 import { Vue } from "vue-class-component";
 
-export default class HomeView extends Vue {
+export default class Identity extends Vue {
   identityStore = useIdentityStore();
 
   handleLogOut() {
-    // IdentityService.logout();
   }
 }
 </script>
@@ -15,7 +14,6 @@ export default class HomeView extends Vue {
 <template>
   <div class="container">
     <div class="px-4 py-5 my-5 text-center">
-      <h1 class="display-5 fw-bold">Hotel!</h1>
       <div class="col-lg-6 mx-auto">
         <p class="lead mb-4">Hotel booking system</p>
         <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">

@@ -29,8 +29,6 @@ public class AccountController : ControllerBase
     private readonly AppDbContext _context;
 
     private readonly IAppBLL _bll;
-    // private readonly PersonMapper _personMapper;
-
 
     public AccountController(SignInManager<AppUser> signInManager, UserManager<AppUser> userManager,
         ILogger<AccountController> logger, IConfiguration configuration, AppDbContext context, IAppBLL bll,

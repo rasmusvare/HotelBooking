@@ -78,6 +78,7 @@ export default class HotelRoomTypesEdit extends Vue {
       this.errorMessage = res.errorMessage;
       console.log(res);
     } else {
+      this.errorMessage = [];
       this.roomTypeStore.$state.data = await this.roomTypeService.getAll(
         this.hotelId
       );
@@ -92,11 +93,11 @@ export default class HotelRoomTypesEdit extends Vue {
       this.errorMessage = res.errorMessage;
       console.log(res);
     } else {
+      this.errorMessage = [];
       this.roomTypeStore.updateRoomType(
         this.selectedRoomTypeId!,
         this.roomTypeFormData!
       );
-
       this.clearFormData();
     }
   }
@@ -108,8 +109,8 @@ export default class HotelRoomTypesEdit extends Vue {
       this.errorMessage = res.errorMessage;
       console.log(res);
     } else {
+      this.errorMessage = [];
       this.roomTypeStore.deleteRoomType(this.selectedRoomTypeId!);
-
       this.clearFormData();
     }
   }

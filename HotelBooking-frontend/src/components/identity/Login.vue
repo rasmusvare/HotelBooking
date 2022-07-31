@@ -21,10 +21,11 @@ export default class Login extends Vue {
         this.errorMessage = res.errorMessage;
         console.log(res);
       } else {
+        this.errorMessage = [];
         this.identityStore.$state.jwt = res.data;
       }
     }
-    await router.push("/");
+    await router.push("/admin");
   }
 }
 </script>

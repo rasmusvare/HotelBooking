@@ -1,5 +1,3 @@
-
-
 <script lang="ts">
 import type { IAmenity } from "@/domain/IAmenity";
 import { AmenityService } from "@/services/AmenityService";
@@ -42,11 +40,11 @@ export default class HotelAmenitiesEdit extends Vue {
       this.errorMessage = res.errorMessage;
       console.log(res);
     } else {
+      this.errorMessage = [];
       this.amenityStore.$state.data = await this.amenityService.getAll(
         this.hotelId
       );
     }
-
   }
 
   async handleEditAmenity() {
@@ -56,28 +54,24 @@ export default class HotelAmenitiesEdit extends Vue {
       this.errorMessage = res.errorMessage;
       console.log(res);
     } else {
+      this.errorMessage = [];
       this.amenityStore.$state.data = await this.amenityService.getAll(
         this.hotelId
       );
     }
-
   }
 
   async handleDeleteAmenity() {
-    // await await AmenityService.delete(this.selectedAmenityId!)
-    //   .then((res) => {
-    //     if (!res.success) {
-    //       console.log(res);
-    //       return;
-    //     }
-    //     this.amenityStore.deleteAmenity(this.selectedAmenityId!);
-    //     this.selectedAmenityId = null;
-    //     this.amenityFormData.name = "";
-    //     this.amenityFormData.description = "";
-    //   })
-    //   .catch((res) => {
-    //     console.log(res);
-    //   });
+    const res = await this.amenityService.remove(this.selectedAmenityId!);
+    if (res.status >= 300) {
+      this.errorMessage = res.errorMessage;
+      console.log(res);
+    } else {
+      this.errorMessage = [];
+      this.amenityStore.$state.data = await this.amenityService.getAll(
+        this.hotelId
+      );
+    }
   }
 }
 </script>
@@ -149,4 +143,3 @@ export default class HotelAmenitiesEdit extends Vue {
     </template>
   </div>
 </template>
-

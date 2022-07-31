@@ -9,6 +9,7 @@ namespace WebApp.ApiControllers;
 [ApiController]
 public class GuestController : ControllerBase
 {
+    /*
     private readonly AppDbContext _context;
 
     public GuestController(AppDbContext context)
@@ -115,4 +116,5 @@ public class GuestController : ControllerBase
     {
         return (_context.Guests?.Any(e => e.Id == id)).GetValueOrDefault();
     }
+    */
 }

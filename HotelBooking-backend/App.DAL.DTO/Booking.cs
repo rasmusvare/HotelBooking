@@ -11,9 +11,6 @@ public class Booking : DomainEntityId
     public Guid RoomTypeId { get; set; }
     public RoomType? RoomType { get; set; }
 
-    // public Guid AppUserId { get; set; }
-    // public AppUser? AppUser { get; set; }
-
     public DateOnly DateFrom { get; set; }
     public DateOnly DateTo { get; set; }
     public decimal TotalPrice { get; set; }

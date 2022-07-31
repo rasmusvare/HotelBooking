@@ -40,24 +40,9 @@ export default class HotelEditForm extends Vue {
       this.errorMessage = res.errorMessage;
       console.log(res);
     } else {
+      this.errorMessage = [];
       this.hotelStore.$state.data = await this.hotelService.getAll();
     }
-  }
-
-  async handleDeleteHotel() {
-    // await HotelService.delete(this.hotel.id!)
-    //     .then((res) => {
-    //         if (!res.success) {
-    //             console.log(res)
-    //             return;
-    //         }
-    //         this.hotelStore.deleteHotel(this.hotel.id!);
-    //         this.$router.push('/dashboard');
-    //     }
-    //     ).catch((res) => {
-    //         console.log(res);
-    //     }
-    // );
   }
 }
 </script>
@@ -111,12 +96,6 @@ export default class HotelEditForm extends Vue {
       @click="handleEditHotel()"
     >
       Edit Hotel
-    </button>
-    <button
-      class="w-100 ms-3 btn btn-lg btn-danger"
-      @click="handleDeleteHotel()"
-    >
-      Delete Hotel
     </button>
   </div>
 </template>

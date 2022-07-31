@@ -2,7 +2,6 @@
 import { Options, Vue } from "vue-class-component";
 import type { IRoomType } from "@/domain/IRoomType";
 import type { ISearchParameters } from "@/domain/ISearchParameters";
-import { useIdentityStore } from "@/stores/identity";
 import { RoomTypeService } from "@/services/RoomTypeService";
 import { HotelService } from "@/services/HotelService";
 import { useHotelStore } from "@/stores/Hotels";
@@ -11,8 +10,6 @@ import { useSearchResultsStore } from "@/stores/SearchResults";
 @Options({
   props: {
     hotelId: String,
-    // searchResults: Object as unknown as IRoomType[] | undefined,
-    // sectionId: String
   },
 })
 export default class SearchRoom extends Vue {
@@ -38,34 +35,41 @@ export default class SearchRoom extends Vue {
   maxGuests = 3;
 
   async handleSearch() {
-    // this.hotelId = this.hotelStore.$state.current?.id;
-    // this.searchData.startDate = new Date(this.start);
-    // this.searchData.endDate = new Date(this.end);
-    this.searchData.hotelId = this.hotelStore.$state.current?.id;
-    console.log("Search clicked");
-    console.log(this.hotelId);
-    console.log(typeof this.searchData.startDate);
-    console.log(this.searchData.startDate);
-    console.log(this.searchData.hotelId);
-    const res = await this.roomTypeService.searchRooms(this.searchData);
-    
-    if (res.status >= 300) {
-      this.errorMessage = res.errorMessage;
-      console.log(res);
+    if (this.searchData.startDate === "" || this.searchData.endDate === "") {
+      this.errorMessage = [];
+      this.errorMessage?.push("Please select start and end date");
     } else {
-      this.searchResultsStore.$state.data = res.data!;
-      this.searchResultsStore.$state.startdate = this.searchData.startDate;
-      this.searchResultsStore.$state.enddate = this.searchData.endDate;
-      this.searchResultsStore.$state.numberOfGuests = this.searchData.numberOfGuests;
+      this.searchData.hotelId = this.hotelStore.$state.current?.id;
+      const res = await this.roomTypeService.searchRooms(this.searchData);
+
+      if (res.status >= 300) {
+        this.errorMessage = res.errorMessage;
+        console.log(res);
+      } else {
+        this.errorMessage = [];
+        this.searchResultsStore.$state.data = res.data!;
+        this.searchResultsStore.$state.startdate = this.searchData.startDate;
+        this.searchResultsStore.$state.enddate = this.searchData.endDate;
+        this.searchResultsStore.$state.numberOfGuests =
+          this.searchData.numberOfGuests;
+      }
     }
   }
 }
 </script>
 
 <template>
-  <!-- <div> -->
   <div class="container">
     <p class="lead mb-4">Search for available rooms</p>
+    <div
+      class="text-danger validation-summary-errors"
+      data-valmsg-summary="true"
+      data-valmsg-replace="true"
+    >
+      <ul v-for="error of errorMessage">
+        <li>{{ error }}</li>
+      </ul>
+    </div>
     <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
       <div class="form-floating">
         <input
@@ -93,5 +97,4 @@ export default class SearchRoom extends Vue {
       </button>
     </div>
   </div>
-  <!-- </div> -->
 </template>

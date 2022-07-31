@@ -12,7 +12,6 @@ public class AutoMapperConfig : Profile
         CreateMap<BLL.DTO.Hotel, DAL.DTO.Hotel>().ReverseMap();
         CreateMap<BLL.DTO.Room, DAL.DTO.Room>().ReverseMap();
         CreateMap<BLL.DTO.RoomType, DAL.DTO.RoomType>().ReverseMap();
-        CreateMap<BLL.DTO.Stay, DAL.DTO.Stay>().ReverseMap();
         CreateMap<BLL.DTO.Identity.AppUser, DAL.DTO.Identity.AppUser>().ReverseMap();
     }
 }

@@ -6,14 +6,15 @@ import { Modal } from "bootstrap";
 @Options({
   props: {
     guests: Object as unknown as IGuest[],
-    guest: Object as unknown as IGuest | undefined,
+    guest: Object as unknown as IGuest,
   },
 })
-export default class GuestAddModal extends Vue {
+export default class GuestEditModal extends Vue {
   guests!: IGuest[];
-  guest!: IGuest | undefined;
+  guest!: IGuest;
 
   guestFormData: IGuest = {
+    id: "",
     firstName: "",
     lastName: "",
     idCode: "",
@@ -24,11 +25,14 @@ export default class GuestAddModal extends Vue {
 
   errorMessage: Array<string> = [];
 
-  addGuestModal!: Modal;
+  editGuestModal!: Modal;
 
   async mounted() {
-    this.addGuestModal = new Modal(document.getElementById("addGuestModal")!);
+    this.editGuestModal = new Modal(
+      document.getElementById("editGuestModal-" + this.guest!.id)!
+    );
     if (this.guest != undefined) {
+      this.guestFormData.id = this.guest.id;
       this.guestFormData.firstName = this.guest.firstName;
       this.guestFormData.lastName = this.guest.lastName;
       this.guestFormData.idCode = this.guest.idCode;
@@ -38,31 +42,24 @@ export default class GuestAddModal extends Vue {
     }
   }
 
-  async handleAddGuest() {
+  handleEditGuest() {
     this.validateForm();
-
     if (this.errorMessage?.length == 0) {
-      let guest: IGuest = {
-        firstName: this.guestFormData.firstName,
-        lastName: this.guestFormData.lastName,
-        idCode: this.guestFormData.idCode,
-        email: this.guestFormData.email,
-        phoneNumber: this.guestFormData.phoneNumber,
-        isBookingOwner: false,
-      };
-
-      this.guests.push(guest);
-      this.guestFormData = {
-        firstName: "",
-        lastName: "",
-        idCode: "",
-        email: "",
-        phoneNumber: "",
-        isBookingOwner: false,
-      };
-
-      this.addGuestModal.hide();
+      var guest = this.guests.find((g) => g.id == this.guestFormData.id)!;
+      guest.firstName = this.guestFormData.firstName;
+      guest.lastName = this.guestFormData.lastName;
+      guest.idCode = this.guestFormData.idCode;
+      guest.email = this.guestFormData.email;
+      guest.phoneNumber = this.guestFormData.phoneNumber;
+      guest.isBookingOwner = this.guestFormData.isBookingOwner;
+      this.editGuestModal.hide();
     }
+  }
+
+  handleDeleteGuest() {
+    var guestIndex = this.guests.indexOf(this.guest);
+    this.guests.splice(guestIndex, 1);
+    this.editGuestModal.hide();
   }
 
   validateForm() {
@@ -102,7 +99,7 @@ export default class GuestAddModal extends Vue {
 <template>
   <div
     class="modal fade"
-    :id="'addGuestModal'"
+    :id="'editGuestModal-' + guest!.id"
     tabindex="-1"
     aria-labelledby="ModalLabel"
     aria-hidden="true"
@@ -173,7 +170,17 @@ export default class GuestAddModal extends Vue {
           </div>
         </div>
         <div class="modal-footer">
-          <button class="btn btn-primary" @click="handleAddGuest()">Add</button>
+          <div class="d-flex">
+            <button class="btn btn-danger w-50" @click="handleDeleteGuest()">
+              Delete
+            </button>
+            <button
+              class="btn btn-primary w-50 ms-2"
+              @click="handleEditGuest()"
+            >
+              Edit
+            </button>
+          </div>
         </div>
       </div>
     </div>

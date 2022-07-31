@@ -107,13 +107,7 @@ export default class BookingEdit extends Vue {
     );
 
     if (this.addDays(new Date(), 3) >= dateFrom){
-
-console.log("KUUPÄEV SUUREM KUI 3");
    this.editDisabled = true;
-
-    } else{
-        console.log("VÄIKSEM");
-        
     }
 
     return Math.floor(
@@ -125,7 +119,6 @@ console.log("KUUPÄEV SUUREM KUI 3");
 addDays(date: Date, days: number) {
   var result = new Date(date);
   result.setDate(result.getDate() + days);
-  console.log(result);
   
   return result;
 }

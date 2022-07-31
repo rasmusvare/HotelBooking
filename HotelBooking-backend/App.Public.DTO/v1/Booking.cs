@@ -5,13 +5,9 @@ namespace App.Public.DTO.v1;
 public class Booking : DomainEntityId
 {
     public Guid HotelId { get; set; }
-    // public Hotel? Hotel { get; set; }
-    
+
     public Guid RoomTypeId { get; set; }
-    // public RoomType? RoomType { get; set; }
-    
-    // public Guid? AppUserId { get; set; }
-    
+
     public Guid BookingHolderId { get; set; }
     public Guest? BookingHolder { get; set; }
 

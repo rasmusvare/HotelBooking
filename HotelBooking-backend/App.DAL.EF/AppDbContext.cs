@@ -14,7 +14,6 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid>
     public DbSet<Hotel> Hotels { get; set; } = default!;
     public DbSet<Room> Rooms { get; set; } = default!;
     public DbSet<RoomType> RoomTypes { get; set; } = default!;
-    public DbSet<Stay> Stays { get; set; } = default!;
 
     public DbSet<RefreshToken> RefreshTokens { get; set; } = default!;
     

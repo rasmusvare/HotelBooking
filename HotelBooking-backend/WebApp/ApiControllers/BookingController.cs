@@ -28,18 +28,37 @@ public class BookingController : ControllerBase
     }
 
     // GET: api/Booking
+    /// <summary>
+    /// Returns all the bookings associated with the specified email
+    /// </summary>
+    /// <param name="email">Email of the booking owner</param>
+    /// <returns>List of bookings</returns>
     [HttpGet("search/{email}")]
+    [Produces("application/json")]
+    [ProducesResponseType(typeof(IEnumerable<App.Public.DTO.v1.Booking>), StatusCodes.Status200OK)]
+    [ProducesErrorResponseType(typeof(RestErrorResponse))]
     public async Task<ActionResult<IEnumerable<App.Public.DTO.v1.Booking>>> GetBookings(string email)
     {
         var bookings = (await _bll.Bookings.SearchBookingsByEmail(email))
             .Select(x => _bookingMapper.Map(x)!)
             .ToList();
 
-        return bookings;
+        return Ok(bookings);
     }
 
     // GET: api/Booking
-    [HttpGet("{hotelId}")]
+    
+    /// <summary>
+    /// Returns all the bookings associated with the specified hotel
+    /// </summary>
+    /// <param name="hotelId">Id of the hotel</param>
+    /// <returns>List of bookings</returns>
+    [HttpGet("{hotelId:guid}")]
+    [Authorize(Roles="admin")]
+    [Produces("application/json")]
+    [ProducesResponseType(typeof(IEnumerable<App.Public.DTO.v1.Booking>), StatusCodes.Status200OK)]
+    [ProducesErrorResponseType(typeof(RestErrorResponse))]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<IEnumerable<Booking>>> GetHotelBookings(Guid hotelId)
     {
         var bookings = (await _bll.Bookings.GetAllHotelAsync(hotelId))
@@ -49,8 +68,19 @@ public class BookingController : ControllerBase
         return bookings;
     }
 
-    // GET: api/Booking/5
-    [HttpGet("details/{id}")]
+    // GET: api/Booking/details/5
+    
+    /// <summary>
+    /// Returns the details of the specified booking
+    /// </summary>
+    /// <param name="id">Id of the booking</param>
+    /// <returns>Booking</returns>
+    [HttpGet("details/{id:guid}")]
+    [Produces("application/json")]
+    [ProducesResponseType(typeof(App.Public.DTO.v1.Booking), StatusCodes.Status200OK)]
+    [ProducesErrorResponseType(typeof(RestErrorResponse))]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<Booking>> GetBooking(Guid id)
     {
         var booking = await _bll.Bookings.GetBooking(id);
@@ -74,20 +104,26 @@ public class BookingController : ControllerBase
             return NotFound(errorResponse);
         }
 
-        Console.WriteLine("in controller: " + booking.BookingHolder.Id);
-
-        var bkö = _bookingMapper.Map(booking)!;
-
-        Console.WriteLine("after mapping: " + bkö.BookingHolder.Id);
-        Console.WriteLine("guest[0]: " + bkö.Guests!.ToList()[0].Id);
-
-        return _bookingMapper.Map(booking)!;
+        return Ok(_bookingMapper.Map(booking)!);
     }
 
 
     // PUT: api/Booking/5
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-    [HttpPut("{id}")]
+    
+    /// <summary>
+    /// Updates the properties of the booking provided
+    /// </summary>
+    /// <param name="id">Id of the booking</param>
+    /// <param name="booking">Properties of the updated booking</param>
+    /// <returns></returns>
+    [HttpPut("{id:guid}")]
+    [Consumes("application/json")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesErrorResponseType(typeof(RestErrorResponse))]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> PutBooking(Guid id, Booking booking)
     {
         if (id != booking.Id)
@@ -131,8 +167,8 @@ public class BookingController : ControllerBase
         }
 
         //TODO: Check dates, if not admin
-        Console.WriteLine(booking.DateFrom.ToString());
-        if (!User.IsInRole("Admin") && DateOnly.FromDateTime(DateTime.Now).AddDays(3) > DateOnly.Parse(bookingDb.DateFrom.ToString()) )
+        
+        if (!User.IsInRole("admin") && DateOnly.FromDateTime(DateTime.Now).AddDays(3) > DateOnly.Parse(bookingDb.DateFrom.ToString()) )
         {
             var errorResponse = new RestErrorResponse
             {
@@ -151,7 +187,47 @@ public class BookingController : ControllerBase
             return BadRequest(errorResponse);
         }
 
+        var roomType = await _bll.RoomTypes.FirstOrDefaultAsync(booking.RoomTypeId);
+
+        if (roomType == null)
+        {
+            var errorResponse = new RestErrorResponse
+            {
+                Type = "https://datatracker.ietf.org/doc/html/rfc7231/#section-6.5.4",
+                Title = "Not found",
+                Status = HttpStatusCode.NotFound,
+                TraceId = Activity.Current?.Id ?? HttpContext.TraceIdentifier,
+                Errors =
+                {
+                    ["Not found"] = new List<string>
+                    {
+                        $"Room type with the id {booking.RoomTypeId} was not found"
+                    }
+                }
+            };
+            return NotFound(errorResponse);
+        }        
+        
         var bllEntity = _bookingMapper.Map(booking)!;
+
+        var validationErrors = await _bll.Bookings.ValidateBooking(bllEntity, roomType);
+
+        if (validationErrors.Count != 0)
+        {
+            var errorResponse = new RestErrorResponse
+            {
+                Type = "https://datatracker.ietf.org/doc/html/rfc7231#section-6.5.1",
+                Title = "Bad request",
+                Status = HttpStatusCode.BadRequest,
+                TraceId = Activity.Current?.Id ?? HttpContext.TraceIdentifier,
+                Errors =
+                {
+                    ["Validation errors"] = validationErrors
+                }
+            };
+            return BadRequest(errorResponse);
+        }
+        
         _bll.Bookings.Update(bllEntity);
         await _bll.SaveChangesAsync();
         return Ok();
@@ -159,7 +235,18 @@ public class BookingController : ControllerBase
 
     // POST: api/Booking
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+    
+    /// <summary>
+    /// Creates a new booking with the properties specified
+    /// </summary>
+    /// <param name="booking">Properties of the booking</param>
+    /// <returns>Created booking</returns>
     [HttpPost]
+    [Produces("application/json")]
+    [Consumes("application/json")]
+    [ProducesResponseType(typeof(App.Public.DTO.v1.Booking), StatusCodes.Status200OK)]
+    [ProducesErrorResponseType(typeof(RestErrorResponse))]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<Booking>> PostBooking(Booking booking)
     {
         var roomType = await _bll.RoomTypes.FirstOrDefaultAsync(booking.RoomTypeId);
@@ -212,7 +299,17 @@ public class BookingController : ControllerBase
     }
 
     // DELETE: api/Booking/5
-    [HttpDelete("{id}")]
+    
+    /// <summary>
+    /// Deletes the specified booking
+    /// </summary>
+    /// <param name="id">Id of the booking</param>
+    /// <returns></returns>
+    [HttpDelete("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesErrorResponseType(typeof(RestErrorResponse))]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteBooking(Guid id)
     {
         var booking = await _bll.Bookings.FirstOrDefaultAsync(id);
@@ -235,8 +332,9 @@ public class BookingController : ControllerBase
             return NotFound(errorResponse);
         }
 
+        //TODO: CHECK IF PAST BOOKING
         //TODO: Check if can delete
-        if (!User.IsInRole("Admin") && DateOnly.FromDateTime(DateTime.Now).AddDays(3) > DateOnly.Parse(booking.DateFrom.ToString()) )
+        if (!User.IsInRole("admin") && DateOnly.FromDateTime(DateTime.Now).AddDays(3) > DateOnly.Parse(booking.DateFrom.ToString()) )
         {
             var errorResponse = new RestErrorResponse
             {

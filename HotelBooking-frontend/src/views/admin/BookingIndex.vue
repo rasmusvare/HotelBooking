@@ -1,5 +1,3 @@
-
-
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
 import BookingsList from "@/components/booking/BookingsList.vue";
@@ -16,10 +14,10 @@ import { RoomTypeService } from "@/services/RoomTypeService";
     BookingsList,
   },
   provide() {
-    return {hotelId: this.hotelId}
-  }
+    return { hotelId: this.hotelId };
+  },
 })
-export default class BookingIndex extends Vue{
+export default class BookingIndex extends Vue {
   hotelId!: string;
   bookings: IBooking[] = [];
 
@@ -29,10 +27,10 @@ export default class BookingIndex extends Vue{
   bookingService = new BookingService();
 
   async mounted() {
-    const res = await this.bookingService.getAll(this.hotelId)
+    const res = await this.bookingService.getAll(this.hotelId);
     this.bookings = res;
 
-    const roomTypes = await this.roomTypeService.getAll(this.hotelId)
+    const roomTypes = await this.roomTypeService.getAll(this.hotelId);
     this.roomTypeStore.$state.data = roomTypes;
   }
 }
@@ -42,11 +40,8 @@ export default class BookingIndex extends Vue{
   <div class="container">
     <div class="d-flex justify-content-between">
       <span class="fs-4 link-dark">Bookings</span>
-      <button type="button" class="btn btn-primary btn-sm">
-        Create New TODO!!
-      </button>
     </div>
-    <hr/>
-    <BookingsList :bookings="bookings"/>
+    <hr />
+    <BookingsList :bookings="bookings" />
   </div>
 </template>

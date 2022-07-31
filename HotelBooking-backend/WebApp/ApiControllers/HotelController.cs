@@ -14,8 +14,7 @@ namespace WebApp.ApiControllers;
 [Route("api/v{version:apiVersion}/[controller]")]
 [ApiController]
 [ApiVersion("1.0")]
-[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-[AllowAnonymous]
+[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "admin")]
 public class HotelController : ControllerBase
 {
     private readonly IAppBLL _bll;
@@ -28,16 +27,33 @@ public class HotelController : ControllerBase
     }
 
     // GET: api/Hotel
+    /// <summary>
+    /// Returns all the hotels in hte booking system
+    /// </summary>
+    /// <returns>List of hotels</returns>
     [HttpGet]
     [AllowAnonymous]
-    public async Task<ActionResult<IEnumerable<App.Public.DTO.v1.Hotel?>>> GetHotels()
+    [Produces("application/json")]
+    [ProducesResponseType(typeof(IEnumerable<App.Public.DTO.v1.Hotel>), StatusCodes.Status200OK)]
+    [ProducesErrorResponseType(typeof(RestErrorResponse))]
+    public async Task<ActionResult<IEnumerable<App.Public.DTO.v1.Hotel>>> GetHotels()
     {
-        var res = (await _bll.Hotels.GetAllAsync()).Select(a => _hotelMapper.Map(a)).ToList();
-        return res;
+        var res = (await _bll.Hotels.GetAllAsync()).Select(a => _hotelMapper.Map(a)!).ToList();
+        return Ok(res);
     }
 
     // GET: api/Hotel/5
-    [HttpGet("{id}")]
+    /// <summary>
+    /// Returns the details of the specified hotel
+    /// </summary>
+    /// <param name="id">Id of the hotel</param>
+    /// <returns>Hotel</returns>
+    [HttpGet("{id:guid}")]
+    [AllowAnonymous]
+    [Produces("application/json")]
+    [ProducesResponseType(typeof(App.Public.DTO.v1.Hotel), StatusCodes.Status200OK)]
+    [ProducesErrorResponseType(typeof(RestErrorResponse))]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<Hotel>> GetHotel(Guid id)
     {
         var hotel = await _bll.Hotels.FirstOrDefaultAsync(id);
@@ -66,7 +82,21 @@ public class HotelController : ControllerBase
 
     // PUT: api/Hotel/5
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-    [HttpPut("{id}")]
+
+
+    /// <summary>
+    /// Update the properties of the specified hotel
+    /// </summary>
+    /// <param name="id">Id of the hotel</param>
+    /// <param name="hotel">Properties of the updated hotel</param>
+    /// <returns></returns>
+    [HttpPut("{id:guid}")]
+    [Consumes("application/json")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesErrorResponseType(typeof(RestErrorResponse))]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> PutHotel(Guid id, Hotel hotel)
     {
         if (id != hotel.Id)
@@ -115,7 +145,17 @@ public class HotelController : ControllerBase
 
     // POST: api/Hotel
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+    /// <summary>
+    /// Creates a new hotel
+    /// </summary>
+    /// <param name="hotel">Properties of the hotel</param>
+    /// <returns>Created hotel</returns>
     [HttpPost]
+    [Produces("application/json")]
+    [Consumes("application/json")]
+    [ProducesResponseType(typeof(App.Public.DTO.v1.Hotel), StatusCodes.Status200OK)]
+    [ProducesErrorResponseType(typeof(RestErrorResponse))]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<Hotel>> PostHotel(Hotel hotel)
     {
         //TODO: Check permissions
@@ -130,14 +170,19 @@ public class HotelController : ControllerBase
     }
 
     // DELETE: api/Hotel/5
-    [HttpDelete("{id}")]
+    /// <summary>
+    /// Deletes the specified hotel along with all other data like rooms, bookings, etc. connected with the hotel
+    /// </summary>
+    /// <param name="id">Id of the hotel</param>
+    /// <returns></returns>
+    [HttpDelete("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesErrorResponseType(typeof(RestErrorResponse))]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteHotel(Guid id)
     {
         //TODO: Check permissions
-        if (_bll.Hotels == null)
-        {
-            return NotFound();
-        }
 
         var hotel = await _bll.Hotels.FirstOrDefaultAsync(id);
         if (hotel == null)

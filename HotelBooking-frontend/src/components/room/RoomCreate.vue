@@ -20,7 +20,7 @@ export default class RoomCreate extends Vue {
 
   hotelId!: string;
   rooms!: IRoom[];
-  //
+  
   roomFormData: IRoom = {
     roomNumber: "",
     roomTypeId: "",
@@ -46,6 +46,7 @@ export default class RoomCreate extends Vue {
         this.errorMessage = res.errorMessage;
         console.log(res);
       } else {
+        this.errorMessage = [];
         this.rooms.push(res.data as unknown as IRoom);
         this.createRoomModal.hide();
       }

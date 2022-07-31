@@ -11,5 +11,4 @@ public interface IAppUnitOfWork : IUnitOfWork
     IHotelRepository Hotels { get; }
     IRoomRepository Rooms { get; }
     IRoomTypeRepository RoomTypes { get; }
-    IStayRepository Stays { get; }
 }

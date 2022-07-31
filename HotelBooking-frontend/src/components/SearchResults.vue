@@ -1,15 +1,24 @@
 <script lang="ts">
-import type { IRoomType } from "@/domain/IRoomType";
 import { useSearchResultsStore } from "@/stores/SearchResults";
 import { Options, Vue } from "vue-class-component";
+import { Tooltip } from "bootstrap";
 
 @Options({
-  props: {
-    // searchResults: Object as unknown as IRoomType[],
-  },
+  props: {},
 })
 export default class SearchResults extends Vue {
   searchResultsStore = useSearchResultsStore();
+
+  tooltipTriggerList!: NodeListOf<Element>;
+
+  updated() {
+    this.tooltipTriggerList = document.querySelectorAll(
+      '[data-bs-toggle="tooltip"]'
+    );
+    const tooltipList = [...this.tooltipTriggerList].map(
+      (tooltipTriggerEl) => new Tooltip(tooltipTriggerEl)
+    );
+  }
 }
 </script>
 
@@ -40,7 +49,13 @@ export default class SearchResults extends Vue {
             </td>
             <td>
               <template v-for="(amenity, index) in each.amenities" :key="index">
-                <span>{{ amenity.name }}</span
+                <span
+                  ><a
+                    href="#"
+                    data-bs-toggle="tooltip"
+                    :data-bs-title="amenity.description"
+                    >{{ amenity.name }}</a
+                  ></span
                 ><span v-if="index < each.amenities!.length - 1">, </span>
               </template>
             </td>
@@ -53,7 +68,7 @@ export default class SearchResults extends Vue {
                   name: 'bookingcreate',
                   params: {
                     hotelId: each.hotelId,
-                    roomTypez: JSON.stringify(each),
+                    roomTypeJSON: JSON.stringify(each),
                   },
                 }"
               >

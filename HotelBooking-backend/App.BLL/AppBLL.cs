@@ -34,40 +34,34 @@ public class AppBLL : BaseBLL<IAppUnitOfWork>, IAppBLL
     public IAmenityService Amenities =>
         _amenities ??=
             new AmenityService(_unitOfWork.Amenities, new AmenityMapper(_mapper));
-    
+
     private IBookingService? _bookings;
 
     public IBookingService Bookings =>
         _bookings ??=
             new BookingService(_unitOfWork.Bookings, new BookingMapper(_mapper));
-    
+
     private IGuestService? _guests;
 
     public IGuestService Guests =>
         _guests ??=
             new GuestService(_unitOfWork.Guests, new GuestMapper(_mapper));
-    
+
     private IHotelService? _hotels;
 
     public IHotelService Hotels =>
         _hotels ??=
             new HotelService(_unitOfWork.Hotels, new HotelMapper(_mapper));
-    
+
     private IRoomService? _rooms;
 
     public IRoomService Rooms =>
         _rooms ??=
             new RoomService(_unitOfWork.Rooms, new RoomMapper(_mapper));
-    
+
     private IRoomTypeService? _roomTypes;
 
     public IRoomTypeService RoomTypes =>
         _roomTypes ??=
             new RoomTypeService(_unitOfWork.RoomTypes, new RoomTypeMapper(_mapper));
-    
-    private IStayService? _stays;
-
-    public IStayService Stays =>
-        _stays ??=
-            new StayService(_unitOfWork.Stays, new StayMapper(_mapper));
 }

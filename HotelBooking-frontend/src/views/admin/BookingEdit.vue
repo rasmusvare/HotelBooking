@@ -43,7 +43,16 @@ export default class BookingEdit extends Vue {
   }
 
   async handleEditBooking() {
-    await this.bookingService.update(this.bookingData);
+    const res = await this.bookingService.update(this.bookingData);
+    if (res.status >= 300) {
+      this.errorMessage = res.errorMessage;
+      console.log(res);
+    } else {
+      this.$router.push({
+        name: "hotelbookings",
+        params: { hotelId: this.bookingData.hotelId },
+      });
+    }
   }
 
   async handleDeleteBooking() {
@@ -63,17 +72,17 @@ export default class BookingEdit extends Vue {
 
 <template>
   <div class="container">
-    <div class="d-flex">
-      <div
-        class="text-danger validation-summary-errors"
-        data-valmsg-summary="true"
-        data-valmsg-replace="true"
-      >
-        <ul v-for="error of errorMessage">
-          <li>{{ error }}</li>
-        </ul>
-      </div>
+    <div>
       <BookingEditForm :bookingData="bookingData" />
+    </div>
+    <div
+      class="text-danger validation-summary-errors"
+      data-valmsg-summary="true"
+      data-valmsg-replace="true"
+    >
+      <ul v-for="error of errorMessage">
+        <li>{{ error }}</li>
+      </ul>
     </div>
     <div class="d-flex">
       <button class="btn btn-primary w-50" @click="handleEditBooking()">
