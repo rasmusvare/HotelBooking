@@ -251,9 +251,6 @@ public class RoomController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteRoom(Guid id)
     {
-        //TODO: Check if can delete
-
-        
         var room = await _bll.Rooms.FirstOrDefaultAsync(id);
         if (room == null)
         {
@@ -281,7 +278,7 @@ public class RoomController : ControllerBase
             _bll.Bookings.Remove(each.Id);
             await _bll.SaveChangesAsync();
         }
-        
+
         _bll.Rooms.Remove(room);
         await _bll.SaveChangesAsync();
 

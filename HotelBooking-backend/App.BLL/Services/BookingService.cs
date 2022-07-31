@@ -124,13 +124,8 @@ public class BookingService : BaseEntityService<App.BLL.DTO.Booking, App.DAL.DTO
         }
         
         return validationErrors;
-
-        
-        //TODO: VALIDATE GUEST EMAIL, PHONE, ETC...
-        //TODO!
     }
 
-//TODO!
     public override Booking Add(Booking booking)
     {
         var numberOfNights = booking.DateTo.DayNumber - booking.DateFrom.DayNumber;

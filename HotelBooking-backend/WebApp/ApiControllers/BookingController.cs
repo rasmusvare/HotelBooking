@@ -334,8 +334,6 @@ public class BookingController : ControllerBase
             return NotFound(errorResponse);
         }
 
-        //TODO: CHECK IF PAST BOOKING
-        //TODO: Check if can delete
         if (!User.IsInRole("admin") && DateOnly.FromDateTime(DateTime.Now).AddDays(3) > DateOnly.Parse(booking.DateFrom.ToString()) )
         {
             var errorResponse = new RestErrorResponse

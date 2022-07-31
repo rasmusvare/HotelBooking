@@ -180,8 +180,6 @@ public class HotelController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteHotel(Guid id)
     {
-        //TODO: Check permissions
-
         var hotel = await _bll.Hotels.FirstOrDefaultAsync(id);
         if (hotel == null)
         {
